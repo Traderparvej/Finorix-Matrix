@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finorix Matrix AI — Login</title>
+  <style>
+    :root{
+      --bg1:#071129; --bg2:#081024; --glass:rgba(255,255,255,0.06);
+      --accent:#7be0ff; --accent2:#8affc1; --muted:rgba(255,255,255,0.6);
+      --card-w:420px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(123,224,255,0.06), transparent),
+                  radial-gradient(800px 400px at 90% 90%, rgba(138,255,193,0.03), transparent),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e9f3ff; -webkit-font-smoothing:antialiased;
+      display:flex;align-items:center;justify-content:center;padding:32px;
+    }
+
+    .matrix {position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.12;
+      background-image: linear-gradient(transparent 0 1px, rgba(255,255,255,0.02) 1px),
+                        linear-gradient(90deg, transparent 0 1px, rgba(255,255,255,0.02) 1px);
+      background-size: 24px 24px, 24px 24px;
+      transform: translateZ(0);
+      animation: float 12s linear infinite;
+    }
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+
+    .card{position:relative;z-index:2;width:100%;max-width:var(--card-w);border-radius:16px;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      backdrop-filter: blur(8px);
+      border:1px solid rgba(255,255,255,0.04);
+      overflow:hidden;
+    }
+
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .logo{width:56px;height:56px;flex:0 0 56px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 18px rgba(123,224,255,0.08);}
+    .logo svg{width:38px;height:38px}
+    .title{font-size:18px;font-weight:700;margin:0}
+    .subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    .field{display:flex;align-items:center;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .field input{flex:1;background:transparent;border:0;outline:none;color:inherit;font-size:15px}
+    .field .icon{opacity:0.7;margin-right:10px}
+
+    .btn{margin-top:6px;padding:12px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#05222b;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(123,224,255,0.08);}
+    .btn:active{transform:translateY(1px)}
+
+    .meta{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}
+    .footer{margin-top:18px;font-size:12px;color:var(--muted);text-align:center}
+
+    .shake{animation:shake 420ms ease-in-out}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-6px)}100%{transform:translateX(0)}}
+
+    @media (max-width:480px){:root{--card-w:92%}.brand .title{font-size:16px}}
+  </style>
+</head>
+<body>
+  <div class="matrix" aria-hidden="true"></div>
+
+  <main class="card" role="main" aria-labelledby="login-title">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="6" y="10" width="36" height="28" rx="6" fill="rgba(255,255,255,0.14)" />
+          <path d="M14 18h20M14 24h20M14 30h20" stroke="white" stroke-opacity="0.18" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="36" cy="12" r="3" fill="white" fill-opacity="0.9" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="title" id="login-title">Finorix Matrix AI</h1>
+        <div class="subtitle">Quotex Advance Signal – Real-Time Precision Trading</div>
+      </div>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div>
+        <label for="user">Username</label>
+        <div class="field">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 20a8 8 0 0116 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <input id="user" name="user" type="text" placeholder="FinorixMatrix" autocomplete="username" required />
+        </div>
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <div class="field" id="pwdField">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 11V8a5 5 0 10-10 0v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/></svg>
+          <input id="password" name="password" type="password" placeholder="Enter Password" autocomplete="current-password" required aria-describedby="pwdHelp" />
+          <button type="button" id="toggle" aria-label="Show password" style="background:none;border:0;color:var(--muted);font-weight:700;cursor:pointer">Show</button>
+        </div>
+        <div id="pwdHelp" class="small"></div>
+      </div>
+
+      <label class="checkbox"><input type="checkbox" id="remember"> <span>Remember</span></label>
+
+      <button class="btn" id="loginBtn" type="submit">Login</button>
+
+      <div class="meta"></div>
+    </form>
+
+    <div class="footer">© <strong>Finorix Matrix AI</strong> — by TraderParvej</div>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('loginForm');
+      const pwd = document.getElementById('password');
+      const toggle = document.getElementById('toggle');
+      const card = document.querySelector('.card');
+      const DEMO_PASSWORD = '@TraderParvej';
+
+      toggle.addEventListener('click', ()=>{
+        const showing = pwd.type === 'text';
+        pwd.type = showing ? 'password' : 'text';
+        toggle.textContent = showing ? 'Show' : 'Hide';
+        toggle.setAttribute('aria-pressed', String(!showing));
+      });
+
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        if(pwd.value === DEMO_PASSWORD){
+          card.style.transform = 'scale(0.998)';
+          setTimeout(()=>{
+            window.location.href = 'signal.html';
+          }, 350);
+        } else {
+          card.classList.remove('shake');
+          void card.offsetWidth;
+          card.classList.add('shake');
+          showToast('Incorrect password — try again');
+        }
+      });
+
+      function showToast(msg){
+        const t = document.createElement('div');
+        t.textContent = msg; t.style.position='fixed'; t.style.left='50%'; t.style.bottom='36px';
+        t.style.transform='translateX(-50%)'; t.style.padding='10px 14px'; t.style.borderRadius='10px';
+        t.style.background='rgba(0,0,0,0.6)'; t.style.color='white'; t.style.fontSize='13px';
+        t.style.zIndex=9999; document.body.appendChild(t);
+        setTimeout(()=>{t.style.transition='200ms ease'; t.style.opacity='0'; t.style.transform+=' translateY(6px)';},1600);
+        setTimeout(()=>t.remove(),2200);
+      }
+
+      document.getElementById('user').focus();
+    })();
+  </script>
+</body>
+</html>
