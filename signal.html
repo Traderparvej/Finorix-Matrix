@@ -119,8 +119,18 @@ body{
 
 /* Responsive: মোবাইলের জন্য */
 @media screen and (max-width:480px){
+  .panel{
+    width:95%;
+    padding:20px 16px;
+  }
   #assetBox{
     grid-template-columns:1fr; /* এক কলামে দেখাবে */
+  }
+  .btns{
+    flex-direction:column; /* বাটনগুলো একে একে দেখাবে */
+  }
+  .btn{
+    width:100%;
   }
 }
 </style>
@@ -243,8 +253,7 @@ function generateSignals(count){
   let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
 
   for(let i=0;i<count;i++){
-      // র‍্যান্ডম 3–8 মিনিট গ্যাপ
-      const gap = Math.floor(Math.random() * 6) + 3; 
+      const gap = Math.floor(Math.random() * 6) + 3; // 3–8 মিনিট
       current.setMinutes(current.getMinutes() + gap);
 
       const t = current.toTimeString().substring(0,5);
