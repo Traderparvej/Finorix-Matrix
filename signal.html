@@ -9,7 +9,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Share Tech Mono', monospace}
 body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:center;padding-top:20px;}
 #matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
-.panel{width:90%;max-width:900px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:30px 28px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 0 35px rgba(0,255,0,0.12);display:flex;flex-direction:column;}
+.panel{width:90%;max-width:900px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:30px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 0 35px rgba(0,255,0,0.12);display:flex;flex-direction:column;}
 .title{text-align:center;font-size:24px;margin-bottom:24px;text-shadow:0 0 12px #0f0;font-weight:bold;cursor:pointer;}
 .row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
 .row label{font-size:15px;color:#0f0;font-weight:600}
@@ -23,44 +23,24 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 #assetBox label:hover{background:rgba(0,255,0,0.1);box-shadow:0 0 10px #0f0;}
 #assetBox input[type="checkbox"]{accent-color:#0f0;}
 .selectAllBtn{margin-top:6px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:6px 10px;border-radius:6px;cursor:pointer;color:#0f0;text-shadow:0 0 4px #0f0;font-size:13px;align-self:start;}
-.selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0;}
 #adminPanel{display:none;margin-top:20px;padding:20px;border:2px solid #0f0;border-radius:12px;background:rgba(0,0,0,0.7);}
 #adminPanel h3{text-align:center;color:#0f0;margin-bottom:12px;}
-#adminPanel label{color:#0f0;margin-top:8px;}
-#adminPanel input{width:100%;padding:8px;margin-top:4px;border:1px solid #0f0;border-radius:6px;background:#000;color:#0f0;}
-#adminPanel button{margin-top:12px;padding:8px 12px;border:none;background:#0f0;color:#000;border-radius:6px;cursor:pointer;}
 .notice{margin-top:10px;padding:10px;border:1px dashed #0f0;border-radius:6px;color:#0f0;font-size:13px;}
-/* Modal styles */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
-.modal-box{width:92%;max-width:520px;background:linear-gradient(180deg,rgba(0,0,0,0.95),#001207);border:1px solid rgba(0,255,0,0.14);padding:22px;border-radius:12px;box-shadow:0 10px 60px rgba(0,255,0,0.06);color:#c8ffd0}
-.modal-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.modal-title{font-size:18px;font-weight:800;color:#eaffdf}
-.modal-sub{font-size:13px;color:#9fe1a8;margin-bottom:12px}
-.modal-list{margin:12px 0;padding-left:18px;color:#dfffdc}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
-.modal-actions button{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-.btn-primary{background:linear-gradient(90deg,#00ff0f,#00cc8a);color:#000}
-.btn-ghost{background:transparent;border:1px solid rgba(0,255,0,0.15);color:#bfffbf}
-.link-like{color:#b8ffd0;text-decoration:underline;font-weight:700}
-.small-note{font-size:12px;color:#9fe1a8;margin-top:8px}
-/* responsive */
-@media(max-width:500px){#assetBox{grid-template-columns:1fr;}.btns{flex-direction:column;}}
+.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999;}
+.popup-box{background:#000;border:2px solid #0f0;padding:25px;border-radius:12px;width:85%;max-width:380px;text-align:center;box-shadow:0 0 25px #0f0;}
+.popup-box h2{margin-bottom:10px;}
+.popup input{width:88%;padding:10px;margin-top:10px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;}
+.popup button{margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;}
 </style>
 </head>
-<body>
-<canvas id="matrix"></canvas>
-<div class="panel">
-  <div class="title" id="panelTitle">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
-  <div class="row">
-    <label>Time Zone (UTC)</label>
-    <select id="timezone">
-      <option value="6" selected>Bangladesh (UTC +06:00)</option>
-      <option value="5">Pakistan (UTC +05:00)</option>
-      <option value="0">UTC +00:00</option>
-      <option value="7">UTC +07:00</option>
-    </select>
-  </div>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="panel">
+
+  <div class="title" id="panelTitle">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
   <div class="row">
     <label>Market Type</label>
@@ -71,13 +51,13 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
   </div>
 
   <div class="row">
-    <label>Assets (Tick to Select)</label>
+    <label>Assets</label>
     <div id="assetBox"></div>
     <button class="selectAllBtn" onclick="toggleSelectAll()">Select / Deselect All</button>
   </div>
 
   <div class="row">
-    <label>Timeframe (Minutes)</label>
+    <label>Timeframe</label>
     <select id="tf">
       <option value="1">1 Minute</option>
       <option value="2">2 Minutes</option>
@@ -88,11 +68,11 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 
   <div class="row">
     <label>Number of Signals</label>
-    <input id="count" type="number" value="5" min="1" />
+    <input id="count" type="number" min="1" value="5">
   </div>
 
   <div class="btns">
-    <button class="btn" onclick="onGenerateClick()">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="onGenerateClick()">GENERATE</button>
     <button class="btn" onclick="copyAll()">COPY</button>
     <button class="btn" onclick="resetOut()">RESET</button>
   </div>
@@ -101,154 +81,158 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 
   <div class="notice" id="noticeBox">License Inactive</div>
 
-  <!-- Admin Panel -->
   <div id="adminPanel">
     <h3>ADMIN PANEL</h3>
-    <label>Admin Password:</label>
-    <input type="password" id="adminPass" placeholder="Enter Password">
-    <label>License Key:</label>
-    <input type="text" id="adminLicense" placeholder="Set License Key">
-    <label>Expire Days:</label>
-    <input type="number" id="adminDays" placeholder="Days of validity">
-    <button onclick="updateLicense()">Update License</button>
-    <button onclick="hideAdmin()">Close Admin Panel</button>
+    <label>Password</label>
+    <input type="password" id="adminPass">
+    <label>License Key</label>
+    <input type="text" id="adminLicense">
+    <label>Expire Days</label>
+    <input type="number" id="adminDays">
+    <button onclick="updateLicense()">Update</button>
+    <button onclick="hideAdmin()">Close</button>
   </div>
+
 </div>
 
 <script>
-// -------------------- Matrix Effect --------------------
-const c=document.getElementById('matrix');const ctx=c.getContext('2d');let fontSize=16;let cols=Math.floor(window.innerWidth/fontSize);let drops=[];function resize(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/fontSize);drops=[];for(let x=0;x<cols;x++)drops[x]=1;}function initMatrix(){resize();setInterval(draw,40);}const matrixChars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';for(let i=0;i<drops.length;i++){let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height && Math.random()>0.975) drops[i]=0;drops[i]++;}}window.addEventListener('resize',initMatrix);initMatrix();
+// ---------------- MATRIX ----------------
+const c=document.getElementById('matrix');
+const ctx=c.getContext('2d');
+let fontSize=16;
+let drops=[];
+function resize(){c.width=innerWidth;c.height=innerHeight;
+let cols=Math.floor(c.width/fontSize);drops=[];
+for(let i=0;i<cols;i++) drops[i]=1;}
+resize();setInterval(draw,40);
+function draw(){
+ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);
+ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';
+const chars='アカサタナハマ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+for(let i=0;i<drops.length;i++){
+let ch=chars[Math.floor(Math.random()*chars.length)];
+ctx.fillText(ch,i*fontSize,drops[i]*fontSize);
+if(drops[i]*fontSize>c.height && Math.random()>0.975) drops[i]=0;
+drops[i]++;}}
+addEventListener('resize',resize);
 
-// -------------------- Signal System --------------------
+// ---------------- ASSETS ----------------
 const realAssets=["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
 const otcAssets=["NZD/USD (OTC)"];
-function updateAssets(){const type=document.getElementById('marketType').value;const box=document.getElementById('assetBox');box.innerHTML='';const assets=type==='real'?realAssets:otcAssets;assets.forEach(a=>{const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.value=a;label.appendChild(document.createTextNode(a));label.appendChild(input);box.appendChild(label);});}
+function updateAssets(){
+const type=document.getElementById("marketType").value;
+const box=document.getElementById("assetBox");
+box.innerHTML="";
+(type==="real"?realAssets:otcAssets).forEach(a=>{
+box.innerHTML+=`<label>${a}<input type="checkbox" value="${a}"></label>`;
+});
+}
 updateAssets();
-function randomAsset(selectedAssets){return selectedAssets.length>0?selectedAssets[Math.floor(Math.random()*selectedAssets.length)]:realAssets[Math.floor(Math.random()*realAssets.length)];}
-function generateSignals(count){const signalBox=document.getElementById("out");signalBox.textContent="";const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);let current=new Date();const tzOffset=parseInt(document.getElementById('timezone').value)||0;current.setHours(current.getUTCHours()+tzOffset);let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;for(let i=0;i<count;i++){const gap=Math.floor(Math.random()*6)+3;current.setMinutes(current.getMinutes()+gap);const t=current.toTimeString().substring(0,5);const asset=randomAsset(selectedAssets);const dir=Math.random()>0.5?'CALL':'PUT';output+=`${asset}  | ${t} | ${dir}\n`;}output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;typeWrite(output,signalBox);}
-function typeWrite(text,element){let index=0;element.textContent="";function type(){if(index<text.length){element.textContent+=text.charAt(index);index++;setTimeout(type,15);}}type();}
-function copyAll(){navigator.clipboard.writeText(document.getElementById('out').textContent);}
-function resetOut(){document.getElementById('out').textContent='';}
-function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const allChecked=Array.from(checkboxes).every(c=>c.checked);checkboxes.forEach(c=>c.checked=!allChecked);}
+function toggleSelectAll(){
+const boxes=document.querySelectorAll("#assetBox input");
+const all=Array.from(boxes).every(b=>b.checked);
+boxes.forEach(b=>b.checked=!all);
+}
 
-// -------------------- License System --------------------
+// ---------------- SIGNAL GEN ----------------
+function randomFrom(arr){
+return arr[Math.floor(Math.random()*arr.length)];
+}
+function generateSignals(count){
+let out=document.getElementById("out");
+out.textContent="";
+let selected=Array.from(document.querySelectorAll("#assetBox input:checked")).map(x=>x.value);
+let now=new Date();
+let txt="";
+for(let i=0;i<count;i++){
+let gap=Math.floor(Math.random()*3)+1;
+now.setMinutes(now.getMinutes()+gap);
+let t=now.toTimeString().substring(0,5);
+let asset=selected.length?randomFrom(selected):randomFrom(realAssets);
+txt+=`${asset} | ${t} | Follow previous candle\n`;
+}
+out.textContent=txt;
+}
+function copyAll(){navigator.clipboard.writeText(out.textContent);}
+function resetOut(){out.textContent="";}
+
+// ---------------- LICENSE SYSTEM ----------------
 let licenseKey="@FINORIXMATRIX@";
 let licenseExpiry=null;
-function loadLicense(){const data=JSON.parse(localStorage.getItem("license")||'{}');licenseKey=data.key||"@FINORIXMATRIX@";licenseExpiry=data.expiry?new Date(data.expiry):null;updateNotice();}
-function saveLicense(){localStorage.setItem("license",JSON.stringify({key:licenseKey,expiry:licenseExpiry}));updateNotice();}
-function updateNotice(){const notice=document.getElementById("noticeBox");if(!licenseExpiry || new Date()>licenseExpiry){notice.textContent="License Inactive";}else{notice.textContent=`License Active — Expires: ${licenseExpiry.toLocaleDateString()}`;}}
+
+function loadLicense(){
+let data=JSON.parse(localStorage.getItem("FIN_LICENSE")||"{}");
+licenseKey=data.key||"@FINORIXMATRIX@";
+licenseExpiry=data.expiry?new Date(data.expiry):null;
+updateNotice();
+}
+function saveLicense(){
+localStorage.setItem("FIN_LICENSE",JSON.stringify({key:licenseKey,expiry:licenseExpiry}));
+updateNotice();
+}
+function updateNotice(){
+const n=document.getElementById("noticeBox");
+if(!licenseExpiry||new Date()>licenseExpiry){
+n.textContent="License Inactive";
+}else{
+n.textContent=`License Active — Expires: ${licenseExpiry.toLocaleDateString()}`;
+}
+}
 loadLicense();
 
-// -------------------- Generate flow: always show promo modal first --------------------
 function onGenerateClick(){
-  showPromoPopup();
+if(!licenseExpiry||new Date()>licenseExpiry){
+showPopup();
+}else{
+generateSignals(parseInt(count.value)||5);
+}
 }
 
-/* Professional promo / hacking-style popup shown every generate */
-function showPromoPopup(){
-  // create overlay
-  const overlay=document.createElement("div");overlay.className="modal-overlay";
-  const box=document.createElement("div");box.className="modal-box";
-
-  box.innerHTML = `
-    <div class="modal-header">
-      <div style="width:44px;height:44px;border-radius:8px;border:1px solid rgba(0,255,0,0.12);display:flex;align-items:center;justify-content:center;font-weight:900">FM</div>
-      <div>
-        <div class="modal-title">BEST ACCURACY — FINORIX MATRIX</div>
-        <div class="modal-sub">High-precision signals. Short gaps. Professional support.</div>
-      </div>
-    </div>
-
-    <div class="modal-list">
-      <div style="margin-bottom:8px;">To get access & maintain accuracy, follow these steps:</div>
-      <ol>
-        <li>Create an account: <span class="link-like" id="createAccountLink">Click Here</span></li>
-        <li>Deposit <strong>$20</strong> to receive your license key.</li>
-        <li>Need help? Contact on Telegram: <a href="https://t.me/traderParvej" target="_blank" class="link-like">@traderParvej</a></li>
-      </ol>
-    </div>
-
-    <div class="small-note">Note: After deposit you will receive a license key. Enter it to activate full signal generation. This message is shown for every generation to ensure users are informed about licensing and support.</div>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" id="promoClose">Close</button>
-      <button class="btn-primary" id="promoProceed">Proceed</button>
-    </div>
-  `;
-
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-
-  // handlers
-  document.getElementById("promoClose").onclick = () => {
-    document.body.removeChild(overlay);
-  };
-  // "Click Here" navigates to signup
-  document.getElementById("createAccountLink").onclick = () => {
-    window.open("https://broker-qx.pro/sign-up/?lid=1508486","_blank");
-  };
-
-  document.getElementById("promoProceed").onclick = () => {
-    document.body.removeChild(overlay);
-    // if license active -> generate; else open license entry modal
-    if(licenseExpiry && new Date() <= licenseExpiry){
-      generateSignals(parseInt(document.getElementById('count').value)||5);
-    } else {
-      showLicenseEntryPopup();
-    }
-  };
+// ---------------- HACKING POPUP ----------------
+function showPopup(){
+const pop=document.createElement("div");
+pop.className="popup";
+pop.innerHTML=`
+<div class="popup-box">
+<h2>⚡ BEST ACCURACY ⚡</h2>
+<p>Create Account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank">Click Here</a></p>
+<p>Deposit <b>$20</b> to get your license.</p>
+<p>Telegram → <b>@traderParvej</b></p>
+<input id="lKey" placeholder="Enter License Key">
+<button onclick="checkKey()">Submit</button>
+<button onclick="this.parentElement.parentElement.remove()">Close</button>
+</div>`;
+document.body.appendChild(pop);
 }
 
-/* License entry popup (professional style) */
-function showLicenseEntryPopup(){
-  const overlay=document.createElement("div");overlay.className="modal-overlay";
-  const box=document.createElement("div");box.className="modal-box";
-
-  box.innerHTML = `
-    <div class="modal-header">
-      <div style="width:44px;height:44px;border-radius:8px;border:1px solid rgba(0,255,0,0.12);display:flex;align-items:center;justify-content:center;font-weight:900">🔐</div>
-      <div>
-        <div class="modal-title">ENTER LICENSE KEY</div>
-        <div class="modal-sub">Paste your license key below to activate signals.</div>
-      </div>
-    </div>
-
-    <div style="margin-top:8px;">
-      <input id="popupLicense" type="text" placeholder="Enter License Key" style="width:100%;padding:10px;margin-top:6px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
-        <button class="btn-ghost" id="licenseCancel">Cancel</button>
-        <button class="btn-primary" id="licenseSubmit">Submit</button>
-      </div>
-      <div class="small-note">Don't have a key? Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" class="link-like">Click Here</a></div>
-    </div>
-  `;
-
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-
-  document.getElementById("licenseCancel").onclick = () => { document.body.removeChild(overlay); };
-  document.getElementById("licenseSubmit").onclick = () => {
-    const key = document.getElementById("popupLicense").value.trim();
-    if(!key){ alert("Please enter a license key."); return; }
-    if(key === licenseKey){
-      // activate for 10 days by default when correct
-      licenseExpiry = new Date(); licenseExpiry.setDate(licenseExpiry.getDate()+10);
-      saveLicense();
-      document.body.removeChild(overlay);
-      generateSignals(parseInt(document.getElementById('count').value)||5);
-    } else {
-      alert("Invalid License Key!");
-    }
-  };
+function checkKey(){
+let key=document.getElementById("lKey").value.trim();
+if(key===licenseKey){
+licenseExpiry=new Date();
+licenseExpiry.setDate(licenseExpiry.getDate()+10);
+saveLicense();
+document.querySelector(".popup").remove();
+alert("License Activated!");
+}else alert("Invalid License Key");
 }
 
-// -------------------- Admin Panel --------------------
-let adminClick=0;
-const adminPanel=document.getElementById("adminPanel");
-document.getElementById("panelTitle").addEventListener("click",()=>{adminClick++;if(adminClick>=5){adminClick=0;adminPanel.style.display="block";}});
+// ---------------- ADMIN PANEL ----------------
+let clicks=0;
+panelTitle.onclick=()=>{if(++clicks>=5){adminPanel.style.display="block";clicks=0;}}
+
 function hideAdmin(){adminPanel.style.display="none";}
-function updateLicense(){const pass=document.getElementById("adminPass").value.trim();if(pass!=="@TraderParvej@"){alert("Wrong Password!");return;}const newKey=document.getElementById("adminLicense").value.trim();const days=parseInt(document.getElementById("adminDays").value);if(newKey){licenseKey=newKey;}if(days && days>0){licenseExpiry=new Date();licenseExpiry.setDate(licenseExpiry.getDate()+days);}saveLicense();alert("License Updated Successfully!");}
 
+function updateLicense(){
+if(adminPass.value!=="@TraderParvej@"){alert("Wrong Password");return;}
+if(adminLicense.value.trim()) licenseKey=adminLicense.value.trim();
+if(adminDays.value>0){
+licenseExpiry=new Date();
+licenseExpiry.setDate(licenseExpiry.getDate()+parseInt(adminDays.value));
+}
+saveLicense();
+alert("Updated!");
+}
 </script>
+
 </body>
 </html>
