@@ -7,37 +7,144 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Share Tech Mono', monospace}
-body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:center;padding-top:20px;}
-#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
-.panel{width:90%;max-width:900px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:30px 28px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 0 35px rgba(0,255,0,0.12);display:flex;flex-direction:column;}
-.title{text-align:center;font-size:24px;margin-bottom:24px;text-shadow:0 0 12px #0f0;font-weight:bold;cursor:pointer;}
+body{
+  background:#000;
+  min-height:100vh;
+  color:#0f0;
+  overflow-x:hidden;
+  display:flex;
+  justify-content:center;
+  padding-top:20px;
+}
+#matrix{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  z-index:-1;
+}
+.panel{
+  width:90%;
+  max-width:900px;
+  background:rgba(0,0,0,0.6);
+  border:1px solid #0f0;
+  padding:30px 28px;
+  border-radius:12px;
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 35px rgba(0,255,0,0.12);
+  display:flex;
+  flex-direction:column;
+}
+.title{
+  text-align:center;
+  font-size:24px;
+  margin-bottom:24px;
+  text-shadow:0 0 12px #0f0;
+  font-weight:bold;
+}
 .row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
 .row label{font-size:15px;color:#0f0;font-weight:600}
-.row select,.row input{width:100%;padding:12px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;outline:none;font-size:14px;}
+.row select,.row input{
+  width:100%;
+  padding:12px;
+  background:#000;
+  border:1px solid #0f0;
+  color:#0f0;
+  border-radius:8px;
+  outline:none;
+  font-size:14px;
+}
 .btns{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center}
-.btn{flex:1;min-width:150px;padding:12px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:1px solid #0f0;color:#000;border-radius:8px;cursor:pointer;font-size:15px;font-weight:bold;text-shadow:0 0 6px #0f0;transition:.2s;box-shadow:0 0 20px rgba(0,255,0,0.5);}
+.btn{
+  flex:1;
+  min-width:150px;
+  padding:12px;
+  background:linear-gradient(90deg,#00ff0f,#00cc8a);
+  border:1px solid #0f0;
+  color:#000;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:bold;
+  text-shadow:0 0 6px #0f0;
+  transition:.2s;
+  box-shadow:0 0 20px rgba(0,255,0,0.5);
+}
 .btn:hover{background:linear-gradient(90deg,#00cc8a,#00ff0f);box-shadow:0 0 24px #0f0}
-.output{margin-top:20px;padding:14px;border:1px dashed rgba(0,255,0,0.3);min-height:220px;white-space:pre-line;overflow-y:auto;border-radius:8px;font-size:14px;line-height:1.4;}
-#assetBox{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-#assetBox label{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;border:1px solid rgba(0,255,0,0.2);transition:.2s;cursor:pointer;}
-#assetBox label:hover{background:rgba(0,255,0,0.1);box-shadow:0 0 10px #0f0;}
-#assetBox input[type="checkbox"]{accent-color:#0f0;}
-.selectAllBtn{margin-top:6px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:6px 10px;border-radius:6px;cursor:pointer;color:#0f0;text-shadow:0 0 4px #0f0;font-size:13px;align-self:start;}
+.output{
+  margin-top:20px;
+  padding:14px;
+  border:1px dashed rgba(0,255,0,0.3);
+  min-height:220px;
+  white-space:pre-line;
+  overflow-y:auto;
+  border-radius:8px;
+  font-size:14px;
+  line-height:1.4;
+}
+#assetBox{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+#assetBox label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid rgba(0,255,0,0.2);
+  transition:.2s;
+  cursor:pointer;
+}
+#assetBox label:hover{
+  background:rgba(0,255,0,0.1);
+  box-shadow:0 0 10px #0f0;
+}
+#assetBox input[type="checkbox"]{
+  accent-color:#0f0;
+}
+.selectAllBtn{
+  margin-top:6px;
+  background:rgba(0,0,0,0.6);
+  border:1px solid #0f0;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  color:#0f0;
+  text-shadow:0 0 4px #0f0;
+  font-size:13px;
+  align-self:start;
+}
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0}
-#adminPanel{display:none;margin-top:20px;padding:20px;border:2px solid #0f0;border-radius:12px;background:rgba(0,0,0,0.7);}
-#adminPanel h3{text-align:center;color:#0f0;margin-bottom:12px;}
-#adminPanel p{color:#0f0;font-size:14px;}
-#adminPanel input, #adminPanel button{margin-top:6px;width:100%;padding:8px;border-radius:6px;border:1px solid #0f0;background:#000;color:#0f0;}
-#adminPanel button{cursor:pointer;background:linear-gradient(90deg,#00ff0f,#00cc8a);color:#000;font-weight:bold;border:none;}
-#adminPanel #closeAdmin{background:#000;color:#0f0;border:1px solid #0f0;}
-@media(max-width:500px){#assetBox{grid-template-columns:1fr;}.btns{flex-direction:column;}}
+@media(max-width:500px){
+  #assetBox{grid-template-columns:1fr;}
+  .btns{flex-direction:column;}
+}
+/* Admin Icon */
+#adminIcon{
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  width:40px;
+  height:40px;
+  background:#0f0;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:999;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#000;
+  font-weight:bold;
+  font-size:18px;
+  user-select:none;
+}
 </style>
 </head>
 <body>
-
 <canvas id="matrix"></canvas>
 <div class="panel">
-  <div class="title" id="panelTitle">FINORIX MATRIX — SIGNAL SYSTEM</div>
+  <div class="title">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
   <div class="row">
     <label>Time Zone (UTC)</label>
@@ -85,77 +192,150 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
   </div>
 
   <div class="output" id="out"></div>
-
-  <!-- Admin Panel -->
-  <div id="adminPanel">
-    <h3>ADMIN PANEL</h3>
-    <p>Manage licenses, devices, etc.</p>
-    <input type="text" id="newDevice" placeholder="Device ID">
-    <input type="datetime-local" id="newExpiry">
-    <button onclick="giveLicense()">Save License</button>
-    <button id="closeAdmin" onclick="hideAdmin()">Close Admin Panel</button>
-  </div>
 </div>
 
+<div id="adminIcon">⚙</div>
+
 <script>
-// Matrix effect
+// -------------------- Matrix Effect --------------------
 const c=document.getElementById('matrix');
 const ctx=c.getContext('2d');
 let fontSize=16;
 let cols=Math.floor(window.innerWidth/fontSize);
-let drops=[];function resize(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/fontSize);drops=[];for(let x=0;x<cols;x++)drops[x]=1;}
+let drops=[];
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/fontSize);drops=[];for(let x=0;x<cols;x++)drops[x]=1;}
 function initMatrix(){resize();setInterval(draw,40);}
 const matrixChars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';for(let i=0;i<drops.length;i++){let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height && Math.random()>0.975)drops[i]=0; drops[i]++;}}
-window.addEventListener('resize',initMatrix);initMatrix();
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.05)';
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.fillStyle='#0f0';
+  ctx.font=fontSize+'px Share Tech Mono';
+  for(let i=0;i<drops.length;i++){
+      let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];
+      ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+      if(drops[i]*fontSize>c.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+  }
+}
+window.addEventListener('resize',initMatrix);
+initMatrix();
 
-// Signal system
-const realAssets=["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
-const otcAssets=["NZD/USD (OTC)"];
-function updateAssets(){const type=document.getElementById('marketType').value;const box=document.getElementById('assetBox');box.innerHTML='';const assets=type==='real'?realAssets:otcAssets;assets.forEach(a=>{const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.value=a;label.appendChild(document.createTextNode(a));label.appendChild(input);box.appendChild(label);});}
+// -------------------- Signal System --------------------
+const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
+const otcAssets = ["NZD/USD (OTC)"];
+function updateAssets(){
+  const type=document.getElementById('marketType').value;
+  const box=document.getElementById('assetBox');
+  box.innerHTML='';
+  const assets=type==='real'?realAssets:otcAssets;
+  assets.forEach(a=>{
+    const label=document.createElement('label');
+    const input=document.createElement('input');
+    input.type='checkbox';
+    input.value=a;
+    label.appendChild(document.createTextNode(a));
+    label.appendChild(input);
+    box.appendChild(label);
+  });
+}
 updateAssets();
-function randomAsset(selectedAssets){return selectedAssets.length>0?selectedAssets[Math.floor(Math.random()*selectedAssets.length)]:realAssets[Math.floor(Math.random()*realAssets.length)];}
-function generateSignals(count){const signalBox=document.getElementById("out");signalBox.textContent="";const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);let current=new Date();const tzOffset=parseInt(document.getElementById('timezone').value)||0;current.setHours(current.getUTCHours()+tzOffset);let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;for(let i=0;i<count;i++){const gap=Math.floor(Math.random()*6)+3;current.setMinutes(current.getMinutes()+gap);const t=current.toTimeString().substring(0,5);const asset=randomAsset(selectedAssets);const dir=Math.random()>0.5?'CALL':'PUT';output+=`${asset}  | ${t} | ${dir}\n`;}output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;typeWrite(output,signalBox);}
-function typeWrite(text,element){let index=0;element.textContent="";function type(){if(index<text.length){element.textContent+=text.charAt(index);index++;setTimeout(type,15);}}type();}
+function randomAsset(selectedAssets){
+  if(selectedAssets.length>0){
+    return selectedAssets[Math.floor(Math.random()*selectedAssets.length)];
+  }else{
+    return realAssets[Math.floor(Math.random()*realAssets.length)];
+  }
+}
+function generateSignals(count){
+  const signalBox=document.getElementById("out");
+  signalBox.textContent="";
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+  let current=new Date();
+  const tzOffset=parseInt(document.getElementById('timezone').value)||0;
+  current.setHours(current.getUTCHours()+tzOffset);
+  let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
+  for(let i=0;i<count;i++){
+      const gap=Math.floor(Math.random()*6)+3; // 3-8 minutes
+      current.setMinutes(current.getMinutes()+gap);
+      const t=current.toTimeString().substring(0,5);
+      const asset=randomAsset(selectedAssets);
+      const dir=Math.random()>0.5?'CALL':'PUT';
+      output+=`${asset}  | ${t} | ${dir}\n`;
+  }
+  output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;
+  typeWrite(output,signalBox);
+}
+function typeWrite(text,element){
+  let index=0;
+  element.textContent="";
+  function type(){if(index<text.length){element.textContent+=text.charAt(index);index++;setTimeout(type,15);}}
+  type();
+}
 function copyAll(){navigator.clipboard.writeText(document.getElementById('out').textContent);}
 function resetOut(){document.getElementById('out').textContent='';}
-function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const allChecked=Array.from(checkboxes).every(c=>c.checked);checkboxes.forEach(c=>c.checked=!allChecked);}
+function toggleSelectAll(){
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const allChecked=Array.from(checkboxes).every(c=>c.checked);
+  checkboxes.forEach(c=>c.checked=!allChecked);
+}
 
-// License + popup
-let validLicenses = {}; // store licenses
+// -------------------- License System --------------------
+const validLicenses = [
+  {key:"LIC-12345",device:"",expiry:"2025-12-31"},
+  {key:"LIC-67890",device:"",expiry:"2025-12-31"}
+];
+
+function getDeviceID(){return "DEV-"+btoa(navigator.userAgent).substring(0,12);} // Simple device ID
+function checkLicense(licenseKey){
+  const devID=getDeviceID();
+  const lic=validLicenses.find(l=>l.key===licenseKey);
+  if(!lic) return {ok:false,msg:"Invalid License"};
+  const now=new Date();
+  if(new Date(lic.expiry)<now) return {ok:false,msg:"License Expired"};
+  if(lic.device!=="" && lic.device!==devID) return {ok:false,msg:"License is locked to another device"};
+  lic.device=devID; // Lock device
+  localStorage.setItem("license",JSON.stringify({key:licenseKey,device:devID}));
+  return {ok:true,msg:"License Valid"};
+}
+
 function showLicensePopup(){
     const overlay=document.createElement("div");
-    overlay.style.position="fixed";overlay.style.top="0";overlay.style.left="0";overlay.style.width="100%";overlay.style.height="100%";overlay.style.background="rgba(0,0,0,0.9)";overlay.style.display="flex";overlay.style.justifyContent="center";overlay.style.alignItems="center";overlay.style.zIndex="9999";
+    overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999";
     const box=document.createElement("div");
-    box.style.background="#000";box.style.border="2px solid #0f0";box.style.padding="30px";box.style.borderRadius="12px";box.style.maxWidth="400px";box.style.width="90%";box.style.color="#0f0";box.style.fontFamily="'Share Tech Mono', monospace";box.style.textAlign="center";box.style.boxShadow="0 0 25px #0f0";
-    box.innerHTML=`<h2>🛡 Hacking System 🛡</h2>
-        <p>Enter your <b>License Key</b> below to access signals.</p>
-        <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-        <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
-        <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>`;
-    overlay.appendChild(box);document.body.appendChild(overlay);
-    document.getElementById("popupClose").onclick=()=>document.body.removeChild(overlay);
+    box.style.cssText="background:#000;border:2px solid #0f0;padding:30px;border-radius:12px;max-width:400px;width:90%;color:#0f0;font-family:'Share Tech Mono',monospace;text-align:center;box-shadow:0 0 25px #0f0";
+    box.innerHTML=`
+      <h2>🛡 Hacking System 🛡</h2>
+      <p>Enter your <b>License Key</b> below to access signals.</p>
+      <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
+      <p>Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here</a></p>
+      <p>Deposit <b>20$</b> to get your license.</p>
+      <p>Contact on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
+      <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
+      <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
+    `;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    document.getElementById("popupClose").onclick=()=>{document.body.removeChild(overlay);}
     document.getElementById("popupSubmit").onclick=()=>{
-        const licenseInput=document.getElementById("popupLicense").value.trim();
-        if(!licenseInput){alert("Enter license!");return;}
-        const deviceId=localStorage.getItem("deviceId")||crypto.randomUUID();localStorage.setItem("deviceId",deviceId);
-        if(validLicenses[licenseInput]){
-            const lic=validLicenses[licenseInput];
-            const now=new Date();
-            if(lic.device && lic.device!==deviceId){alert("License used on another device!");return;}
-            if(new Date(lic.expiry)<now){alert("License expired!");return;}
-            lic.device=deviceId;document.body.removeChild(overlay);const count=parseInt(document.getElementById('count').value)||5;generateSignals(count);
-        }else alert("Invalid License!");
+      const key=document.getElementById("popupLicense").value.trim();
+      const res=checkLicense(key);
+      if(res.ok){document.body.removeChild(overlay);generateSignals(parseInt(document.getElementById('count').value)||5);}
+      else alert(res.msg);
     }
 }
 
-// Admin panel
-let adminClick=0;const adminPanel=document.getElementById('adminPanel');
-document.getElementById('panelTitle').addEventListener('click',()=>{
-    adminClick++;if(adminClick>=5){const pass=prompt("Enter Admin Password:");if(pass==="@TraderParvej@"){adminPanel.style.display="block";}adminClick=0;}
-});
-function hideAdmin(){adminPanel.style.display="none";}
-function giveLicense(){const device=document.getElementById("newDevice").value.trim();const expiry=document.getElementById("newExpiry").value;if(!device||!expiry){alert("Fill all fields!");return;}const now=new Date();if(validLicenses[device] && new Date(validLicenses[device].expiry)>now){alert("Device already has active license!");return;}validLicenses[device]={expiry:expiry,device:device};alert("License saved!");}
+// -------------------- Admin Panel --------------------
+let adminClickCount=0;
+document.getElementById("adminIcon").onclick=()=>{
+  adminClickCount++;
+  if(adminClickCount>=5){
+    adminClickCount=0;
+    const licData=JSON.parse(localStorage.getItem("license")||'{}');
+    alert("🔑 Admin Panel 🔑\nLicense Key: "+(licData.key||"Not Set")+"\nDevice ID: "+(licData.device||"N/A")+"\nExpiry: "+(validLicenses.find(l=>l.key===licData.key)?.expiry||"N/A"));
+  }
+};
 </script>
 </body>
 </html>
