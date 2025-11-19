@@ -261,7 +261,7 @@ function generateSignals(count){
   current.setHours(current.getUTCHours()+tzOffset);
   let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
   for(let i=0;i<count;i++){
-      const gap=Math.floor(Math.random()*6)+3; // 3-8 minutes
+      const gap=Math.floor(Math.random()*6)+3;
       current.setMinutes(current.getMinutes()+gap);
       const t=current.toTimeString().substring(0,5);
       const asset=randomAsset(selectedAssets);
@@ -292,7 +292,7 @@ function toggleSelectAll(){
 }
 
 // License + Device Lock
-const validLicenses = [{key:"LIC-12345",device:""}]; // device assigned dynamically
+const validLicenses = [{key:"LIC-12345",device:""}];
 function showLicensePopup(){
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
@@ -354,14 +354,13 @@ function showLicensePopup(){
 // Admin Panel Unlock (FIXED)
 let adminClick = 0;
 const adminPanel = document.getElementById('adminPanel');
-const titleBtn = document.getElementById('panelTitle');
-titleBtn.addEventListener("click", () => {
+document.getElementById('panelTitle').addEventListener('click', () => {
     adminClick++;
     if(adminClick >= 5){
-        adminPanel.style.display = "block"; // panel দেখাও
-        adminPanel.scrollIntoView({ behavior: "smooth" }); // scroll
-        setTimeout(()=>{alert("⚡ Admin Panel Unlocked ⚡");}, 100); // alert delay
-        adminClick = 0; // reset
+        adminPanel.style.display = "block";
+        adminPanel.scrollIntoView({behavior:"smooth"});
+        setTimeout(()=>alert("⚡ Admin Panel Unlocked ⚡"),100);
+        adminClick=0;
     }
 });
 function hideAdmin(){adminPanel.style.display='none';}
