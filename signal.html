@@ -40,7 +40,6 @@ body{
   margin-bottom:24px;
   text-shadow:0 0 12px #0f0;
   font-weight:bold;
-  cursor:pointer; /* Clickable for admin panel */
 }
 .row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
 .row label{font-size:15px;color:#0f0;font-weight:600}
@@ -121,6 +120,25 @@ body{
   #assetBox{grid-template-columns:1fr;}
   .btns{flex-direction:column;}
 }
+/* Admin Icon */
+#adminIcon{
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  width:40px;
+  height:40px;
+  background:#0f0;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:999;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#000;
+  font-weight:bold;
+  font-size:18px;
+  user-select:none;
+}
 </style>
 </head>
 <body>
@@ -176,8 +194,10 @@ body{
   <div class="output" id="out"></div>
 </div>
 
+<div id="adminIcon">⚙</div>
+
 <script>
-// Matrix Effect
+// -------------------- Matrix Effect --------------------
 const c=document.getElementById('matrix');
 const ctx=c.getContext('2d');
 let fontSize=16;
@@ -201,7 +221,7 @@ function draw(){
 window.addEventListener('resize',initMatrix);
 initMatrix();
 
-// Signal System
+// -------------------- Signal System --------------------
 const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
 const otcAssets = ["NZD/USD (OTC)"];
 function updateAssets(){
@@ -237,7 +257,7 @@ function generateSignals(count){
   current.setHours(current.getUTCHours()+tzOffset);
   let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
   for(let i=0;i<count;i++){
-      const gap=Math.floor(Math.random()*6)+3;
+      const gap=Math.floor(Math.random()*6)+3; // 3-8 minutes
       current.setMinutes(current.getMinutes()+gap);
       const t=current.toTimeString().substring(0,5);
       const asset=randomAsset(selectedAssets);
@@ -250,13 +270,7 @@ function generateSignals(count){
 function typeWrite(text,element){
   let index=0;
   element.textContent="";
-  function type(){
-      if(index<text.length){
-          element.textContent+=text.charAt(index);
-          index++;
-          setTimeout(type,15);
-      }
-  }
+  function type(){if(index<text.length){element.textContent+=text.charAt(index);index++;setTimeout(type,15);}}
   type();
 }
 function copyAll(){navigator.clipboard.writeText(document.getElementById('out').textContent);}
@@ -267,160 +281,61 @@ function toggleSelectAll(){
   checkboxes.forEach(c=>c.checked=!allChecked);
 }
 
-// --- License Popup ---
-const validLicenses = ["LIC-12345","LIC-67890"];
+// -------------------- License System --------------------
+const validLicenses = [
+  {key:"LIC-12345",device:"",expiry:"2025-12-31"},
+  {key:"LIC-67890",device:"",expiry:"2025-12-31"}
+];
+
+function getDeviceID(){return "DEV-"+btoa(navigator.userAgent).substring(0,12);} // Simple device ID
+function checkLicense(licenseKey){
+  const devID=getDeviceID();
+  const lic=validLicenses.find(l=>l.key===licenseKey);
+  if(!lic) return {ok:false,msg:"Invalid License"};
+  const now=new Date();
+  if(new Date(lic.expiry)<now) return {ok:false,msg:"License Expired"};
+  if(lic.device!=="" && lic.device!==devID) return {ok:false,msg:"License is locked to another device"};
+  lic.device=devID; // Lock device
+  localStorage.setItem("license",JSON.stringify({key:licenseKey,device:devID}));
+  return {ok:true,msg:"License Valid"};
+}
+
 function showLicensePopup(){
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.background = "rgba(0,0,0,0.9)";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "9999";
-
-    const box = document.createElement("div");
-    box.style.background = "#000";
-    box.style.border = "2px solid #0f0";
-    box.style.padding = "30px";
-    box.style.borderRadius = "12px";
-    box.style.maxWidth = "400px";
-    box.style.width = "90%";
-    box.style.color = "#0f0";
-    box.style.fontFamily = "'Share Tech Mono', monospace";
-    box.style.textAlign = "center";
-    box.style.boxShadow = "0 0 25px #0f0";
-
-    box.innerHTML = `
-        <h2>🛡 Hacking System 🛡</h2>
-        <p>Enter your <b>License Key</b> below to access signals.</p>
-        <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-        <p>Create your account here → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here to Sign Up</a></p>
-        <p>Make a deposit of <b>20$</b> to get your license.</p>
-        <p>Contact me on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
-        <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
-        <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
+    const overlay=document.createElement("div");
+    overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999";
+    const box=document.createElement("div");
+    box.style.cssText="background:#000;border:2px solid #0f0;padding:30px;border-radius:12px;max-width:400px;width:90%;color:#0f0;font-family:'Share Tech Mono',monospace;text-align:center;box-shadow:0 0 25px #0f0";
+    box.innerHTML=`
+      <h2>🛡 Hacking System 🛡</h2>
+      <p>Enter your <b>License Key</b> below to access signals.</p>
+      <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
+      <p>Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here</a></p>
+      <p>Deposit <b>20$</b> to get your license.</p>
+      <p>Contact on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
+      <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
+      <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
     `;
-
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-
-    document.getElementById("popupClose").onclick = () => {
-        document.body.removeChild(overlay);
-    }
-
-    document.getElementById("popupSubmit").onclick = () => {
-        const license = document.getElementById("popupLicense").value.trim();
-        if(validLicenses.includes(license)){
-            document.body.removeChild(overlay);
-            const count = parseInt(document.getElementById('count').value) || 5;
-            generateSignals(count);
-        } else {
-            alert("Invalid License! Please contact @traderParvej after creating account and deposit.");
-        }
+    document.getElementById("popupClose").onclick=()=>{document.body.removeChild(overlay);}
+    document.getElementById("popupSubmit").onclick=()=>{
+      const key=document.getElementById("popupLicense").value.trim();
+      const res=checkLicense(key);
+      if(res.ok){document.body.removeChild(overlay);generateSignals(parseInt(document.getElementById('count').value)||5);}
+      else alert(res.msg);
     }
 }
 
-// --- Admin Panel (5-click) ---
-let clickCount = 0;
-const adminPassword = "@TraderParvej@";
-const titleDiv = document.querySelector('.title');
-titleDiv.addEventListener('click', () => {
-    clickCount++;
-    if(clickCount === 5){
-        clickCount = 0;
-        showAdminPanel();
-    }
-});
-
-function showAdminPanel(){
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.background = "rgba(0,0,0,0.95)";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "10000";
-
-    const box = document.createElement("div");
-    box.style.background = "#000";
-    box.style.border = "2px solid #0f0";
-    box.style.padding = "30px";
-    box.style.borderRadius = "12px";
-    box.style.maxWidth = "400px";
-    box.style.width = "90%";
-    box.style.color = "#0f0";
-    box.style.fontFamily = "'Share Tech Mono', monospace";
-    box.style.textAlign = "center";
-    box.style.boxShadow = "0 0 25px #0f0";
-
-    box.innerHTML = `
-        <h2>🔐 Admin Panel 🔐</h2>
-        <input type="password" id="adminPass" placeholder="Enter Admin Password" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-        <button id="adminLogin" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Login</button>
-        <button id="adminClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
-        <div id="adminContent" style="margin-top:20px;display:none;text-align:left;">
-            <label>Quotex ID:</label>
-            <input type="text" id="adminQuotexID" placeholder="e.g. 123456" style="width:100%;padding:8px;margin:6px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-            <label>License Days:</label>
-            <input type="number" id="adminDays" placeholder="e.g. 5" style="width:100%;padding:8px;margin:6px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-            <button id="saveLicense" style="margin-top:10px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Save</button>
-        </div>
-    `;
-
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-
-    document.getElementById("adminClose").onclick = () => {
-        document.body.removeChild(overlay);
-    }
-
-    document.getElementById("adminLogin").onclick = () => {
-        const pass = document.getElementById("adminPass").value.trim();
-        if(pass === adminPassword){
-            document.getElementById("adminContent").style.display = "block";
-            document.getElementById("adminPass").style.display = "none";
-            document.getElementById("adminLogin").style.display = "none";
-        } else {
-            alert("Incorrect Password!");
-        }
-    }
-
-    document.getElementById("saveLicense").onclick = () => {
-        const quotexID = document.getElementById("adminQuotexID").value.trim();
-        const days = parseInt(document.getElementById("adminDays").value);
-        if(quotexID && days > 0){
-            const expireDate = new Date();
-            expireDate.setDate(expireDate.getDate() + days);
-            localStorage.setItem("licensedID", quotexID);
-            localStorage.setItem("licenseExpire", expireDate.getTime());
-            alert(`License saved for ID: ${quotexID} valid until ${expireDate.toLocaleDateString()}`);
-        } else {
-            alert("Enter valid ID and days!");
-        }
-    }
-}
-
-// --- Check License before generating signals ---
-const originalShowLicensePopup = showLicensePopup;
-showLicensePopup = function(){
-    const licensedID = localStorage.getItem("licensedID");
-    const expire = parseInt(localStorage.getItem("licenseExpire")||"0");
-    const now = Date.now();
-    if(licensedID && now < expire){
-        const count = parseInt(document.getElementById('count').value) || 5;
-        generateSignals(count);
-    } else {
-        originalShowLicensePopup();
-    }
-}
+// -------------------- Admin Panel --------------------
+let adminClickCount=0;
+document.getElementById("adminIcon").onclick=()=>{
+  adminClickCount++;
+  if(adminClickCount>=5){
+    adminClickCount=0;
+    const licData=JSON.parse(localStorage.getItem("license")||'{}');
+    alert("🔑 Admin Panel 🔑\nLicense Key: "+(licData.key||"Not Set")+"\nDevice ID: "+(licData.device||"N/A")+"\nExpiry: "+(validLicenses.find(l=>l.key===licData.key)?.expiry||"N/A"));
+  }
+};
 </script>
 </body>
 </html>
