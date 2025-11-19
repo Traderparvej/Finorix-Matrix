@@ -234,14 +234,18 @@ function generateSignals(count){
   const tzOffset=parseInt(document.getElementById('timezone').value)||0;
   current.setHours(current.getUTCHours()+tzOffset);
   let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
+
   for(let i=0;i<count;i++){
-      const gap=parseInt(document.getElementById('tf').value)||1;
-      current.setMinutes(current.getMinutes()+gap);
-      const t=current.toTimeString().substring(0,5);
-      const asset=randomAsset(selectedAssets);
-      const dir=Math.random()>0.5?'CALL':'PUT';
-      output+=`${asset}  | ${t} | ${dir}\n`;
+      // র‍্যান্ডম 3–8 মিনিট গ্যাপ
+      const gap = Math.floor(Math.random() * 6) + 3; 
+      current.setMinutes(current.getMinutes() + gap);
+
+      const t = current.toTimeString().substring(0,5);
+      const asset = randomAsset(selectedAssets);
+      const dir = Math.random() > 0.5 ? 'CALL' : 'PUT';
+      output += `${asset}  | ${t} | ${dir}\n`;
   }
+
   output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;
   typeWrite(output,signalBox);
 }
