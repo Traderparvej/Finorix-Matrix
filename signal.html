@@ -30,6 +30,20 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 #adminPanel input{width:100%;padding:8px;margin-top:4px;border:1px solid #0f0;border-radius:6px;background:#000;color:#0f0;}
 #adminPanel button{margin-top:12px;padding:8px 12px;border:none;background:#0f0;color:#000;border-radius:6px;cursor:pointer;}
 .notice{margin-top:10px;padding:10px;border:1px dashed #0f0;border-radius:6px;color:#0f0;font-size:13px;}
+/* Modal styles */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.modal-box{width:92%;max-width:520px;background:linear-gradient(180deg,rgba(0,0,0,0.95),#001207);border:1px solid rgba(0,255,0,0.14);padding:22px;border-radius:12px;box-shadow:0 10px 60px rgba(0,255,0,0.06);color:#c8ffd0}
+.modal-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.modal-title{font-size:18px;font-weight:800;color:#eaffdf}
+.modal-sub{font-size:13px;color:#9fe1a8;margin-bottom:12px}
+.modal-list{margin:12px 0;padding-left:18px;color:#dfffdc}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+.modal-actions button{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-primary{background:linear-gradient(90deg,#00ff0f,#00cc8a);color:#000}
+.btn-ghost{background:transparent;border:1px solid rgba(0,255,0,0.15);color:#bfffbf}
+.link-like{color:#b8ffd0;text-decoration:underline;font-weight:700}
+.small-note{font-size:12px;color:#9fe1a8;margin-top:8px}
+/* responsive */
 @media(max-width:500px){#assetBox{grid-template-columns:1fr;}.btns{flex-direction:column;}}
 </style>
 </head>
@@ -123,11 +137,110 @@ let licenseExpiry=null;
 function loadLicense(){const data=JSON.parse(localStorage.getItem("license")||'{}');licenseKey=data.key||"@FINORIXMATRIX@";licenseExpiry=data.expiry?new Date(data.expiry):null;updateNotice();}
 function saveLicense(){localStorage.setItem("license",JSON.stringify({key:licenseKey,expiry:licenseExpiry}));updateNotice();}
 function updateNotice(){const notice=document.getElementById("noticeBox");if(!licenseExpiry || new Date()>licenseExpiry){notice.textContent="License Inactive";}else{notice.textContent=`License Active — Expires: ${licenseExpiry.toLocaleDateString()}`;}}
-function onGenerateClick(){if(!licenseExpiry || new Date()>licenseExpiry){showLicensePopup();}else{generateSignals(parseInt(document.getElementById('count').value)||5);}}
-function showLicensePopup(){const overlay=document.createElement("div");overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999";const box=document.createElement("div");box.style.cssText="background:#000;border:2px solid #0f0;padding:30px;border-radius:12px;max-width:400px;width:90%;color:#0f0;font-family:'Share Tech Mono',monospace;text-align:center;box-shadow:0 0 25px #0f0";box.innerHTML=`<h2>🛡 Hacking System 🛡</h2><p>Enter your <b>License Key</b> below to access signals.</p><input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;"><p>Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here</a></p><p>Deposit <b>20$</b> to get your license.</p><p>Contact on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p><button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button><button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>`;overlay.appendChild(box);document.body.appendChild(overlay);
-document.getElementById("popupClose").onclick=()=>{document.body.removeChild(overlay);}
-document.getElementById("popupSubmit").onclick=()=>{const key=document.getElementById("popupLicense").value.trim();if(key===licenseKey){licenseExpiry=new Date();licenseExpiry.setDate(licenseExpiry.getDate()+10);saveLicense();document.body.removeChild(overlay);generateSignals(parseInt(document.getElementById('count').value)||5);}else{alert("Invalid License Key!");}}}
 loadLicense();
+
+// -------------------- Generate flow: always show promo modal first --------------------
+function onGenerateClick(){
+  showPromoPopup();
+}
+
+/* Professional promo / hacking-style popup shown every generate */
+function showPromoPopup(){
+  // create overlay
+  const overlay=document.createElement("div");overlay.className="modal-overlay";
+  const box=document.createElement("div");box.className="modal-box";
+
+  box.innerHTML = `
+    <div class="modal-header">
+      <div style="width:44px;height:44px;border-radius:8px;border:1px solid rgba(0,255,0,0.12);display:flex;align-items:center;justify-content:center;font-weight:900">FM</div>
+      <div>
+        <div class="modal-title">BEST ACCURACY — FINORIX MATRIX</div>
+        <div class="modal-sub">High-precision signals. Short gaps. Professional support.</div>
+      </div>
+    </div>
+
+    <div class="modal-list">
+      <div style="margin-bottom:8px;">To get access & maintain accuracy, follow these steps:</div>
+      <ol>
+        <li>Create an account: <span class="link-like" id="createAccountLink">Click Here</span></li>
+        <li>Deposit <strong>$20</strong> to receive your license key.</li>
+        <li>Need help? Contact on Telegram: <a href="https://t.me/traderParvej" target="_blank" class="link-like">@traderParvej</a></li>
+      </ol>
+    </div>
+
+    <div class="small-note">Note: After deposit you will receive a license key. Enter it to activate full signal generation. This message is shown for every generation to ensure users are informed about licensing and support.</div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" id="promoClose">Close</button>
+      <button class="btn-primary" id="promoProceed">Proceed</button>
+    </div>
+  `;
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  // handlers
+  document.getElementById("promoClose").onclick = () => {
+    document.body.removeChild(overlay);
+  };
+  // "Click Here" navigates to signup
+  document.getElementById("createAccountLink").onclick = () => {
+    window.open("https://broker-qx.pro/sign-up/?lid=1508486","_blank");
+  };
+
+  document.getElementById("promoProceed").onclick = () => {
+    document.body.removeChild(overlay);
+    // if license active -> generate; else open license entry modal
+    if(licenseExpiry && new Date() <= licenseExpiry){
+      generateSignals(parseInt(document.getElementById('count').value)||5);
+    } else {
+      showLicenseEntryPopup();
+    }
+  };
+}
+
+/* License entry popup (professional style) */
+function showLicenseEntryPopup(){
+  const overlay=document.createElement("div");overlay.className="modal-overlay";
+  const box=document.createElement("div");box.className="modal-box";
+
+  box.innerHTML = `
+    <div class="modal-header">
+      <div style="width:44px;height:44px;border-radius:8px;border:1px solid rgba(0,255,0,0.12);display:flex;align-items:center;justify-content:center;font-weight:900">🔐</div>
+      <div>
+        <div class="modal-title">ENTER LICENSE KEY</div>
+        <div class="modal-sub">Paste your license key below to activate signals.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <input id="popupLicense" type="text" placeholder="Enter License Key" style="width:100%;padding:10px;margin-top:6px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+        <button class="btn-ghost" id="licenseCancel">Cancel</button>
+        <button class="btn-primary" id="licenseSubmit">Submit</button>
+      </div>
+      <div class="small-note">Don't have a key? Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" class="link-like">Click Here</a></div>
+    </div>
+  `;
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  document.getElementById("licenseCancel").onclick = () => { document.body.removeChild(overlay); };
+  document.getElementById("licenseSubmit").onclick = () => {
+    const key = document.getElementById("popupLicense").value.trim();
+    if(!key){ alert("Please enter a license key."); return; }
+    if(key === licenseKey){
+      // activate for 10 days by default when correct
+      licenseExpiry = new Date(); licenseExpiry.setDate(licenseExpiry.getDate()+10);
+      saveLicense();
+      document.body.removeChild(overlay);
+      generateSignals(parseInt(document.getElementById('count').value)||5);
+    } else {
+      alert("Invalid License Key!");
+    }
+  };
+}
 
 // -------------------- Admin Panel --------------------
 let adminClick=0;
