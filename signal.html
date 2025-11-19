@@ -155,7 +155,7 @@ function updateLicenseStatus(){
   const statusDiv=document.getElementById('licenseStatus');
   if(isLicenseValid()){
     const data=getLicenseData();
-    statusDiv.textContent=`License Active ✔️ | Expires: ${new Date(data.expiry).toLocaleString()}`;
+    statusDiv.textContent=`License Active ✔️ | .toLocaleString()}`;
     return true;
   }else{
     statusDiv.textContent="License Inactive ⚠️";
