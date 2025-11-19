@@ -9,9 +9,12 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Share Tech Mono', monospace}
 body{
   background:#000;
-  overflow:hidden;
   min-height:100vh;
   color:#0f0;
+  overflow-x:hidden;
+  display:flex;
+  justify-content:center;
+  padding-top:20px;
 }
 #matrix{
   position:fixed;
@@ -22,13 +25,14 @@ body{
 .panel{
   width:90%;
   max-width:900px;
-  margin:40px auto;
   background:rgba(0,0,0,0.6);
   border:1px solid #0f0;
   padding:30px 28px;
   border-radius:12px;
   backdrop-filter:blur(6px);
   box-shadow:0 0 35px rgba(0,255,0,0.12);
+  display:flex;
+  flex-direction:column;
 }
 .title{
   text-align:center;
@@ -49,9 +53,10 @@ body{
   outline:none;
   font-size:14px;
 }
-.btns{display:flex;gap:12px;margin-top:12px}
+.btns{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center}
 .btn{
   flex:1;
+  min-width:150px;
   padding:12px;
   background:linear-gradient(90deg,#00ff0f,#00cc8a);
   border:1px solid #0f0;
@@ -69,11 +74,17 @@ body{
   margin-top:20px;
   padding:14px;
   border:1px dashed rgba(0,255,0,0.3);
-  min-height:180px;
+  min-height:220px;
   white-space:pre-line;
   overflow-y:auto;
   border-radius:8px;
   font-size:14px;
+  line-height:1.4;
+}
+#assetBox{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
 }
 #assetBox label{
   display:flex;
@@ -102,6 +113,7 @@ body{
   color:#0f0;
   text-shadow:0 0 4px #0f0;
   font-size:13px;
+  align-self:start;
 }
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0}
 </style>
@@ -131,7 +143,7 @@ body{
 
   <div class="row">
     <label>Assets (Tick to Select)</label>
-    <div id="assetBox" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
+    <div id="assetBox"></div>
     <button class="selectAllBtn" onclick="toggleSelectAll()">Select / Deselect All</button>
   </div>
 
@@ -158,22 +170,48 @@ body{
 
   <div class="output" id="out"></div>
 </div>
+
 <script>
-const realAssets = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/JPY", "EUR/JPY", "GBP/JPY", "USD/CAD", "AUD/CAD", "EUR/GBP", "USD/CHF"];
+// Matrix Effect
+const c=document.getElementById('matrix');
+const ctx=c.getContext('2d');
+let fontSize=16;
+let cols=Math.floor(window.innerWidth/fontSize);
+let drops=[];
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/fontSize);drops=[];for(let x=0;x<cols;x++)drops[x]=1;}
+function initMatrix(){resize();setInterval(draw,40);}
+const matrixChars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.05)';
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.fillStyle='#0f0';
+  ctx.font=fontSize+'px Share Tech Mono';
+  for(let i=0;i<drops.length;i++){
+      let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];
+      ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+      if(drops[i]*fontSize>c.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+  }
+}
+window.addEventListener('resize',initMatrix);
+initMatrix();
+
+// Signal System
+const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
 const otcAssets = ["NZD/USD (OTC)"];
 
 function updateAssets(){
-  const type = document.getElementById('marketType').value;
-  const box = document.getElementById('assetBox');
-  box.innerHTML = '';
-  const assets = type === 'real' ? realAssets : otcAssets;
-  assets.forEach(a => {
-    const label = document.createElement('label');
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.value = a;
+  const type=document.getElementById('marketType').value;
+  const box=document.getElementById('assetBox');
+  box.innerHTML='';
+  const assets=type==='real'?realAssets:otcAssets;
+  assets.forEach(a=>{
+    const label=document.createElement('label');
+    const input=document.createElement('input');
+    input.type='checkbox';
+    input.value=a;
     label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + a));
+    label.appendChild(document.createTextNode(' '+a));
     box.appendChild(label);
   });
 }
@@ -187,10 +225,6 @@ function randomAsset(selectedAssets){
   }
 }
 
-function randomTimeGap(){
-  return parseInt(document.getElementById('tf').value)||1;
-}
-
 function generateSignals(count){
   const signalBox=document.getElementById("out");
   signalBox.textContent="";
@@ -199,14 +233,16 @@ function generateSignals(count){
   let current=new Date();
   const tzOffset=parseInt(document.getElementById('timezone').value)||0;
   current.setHours(current.getUTCHours()+tzOffset);
-  let output="";
+  let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
   for(let i=0;i<count;i++){
-      const gap=randomTimeGap();
+      const gap=parseInt(document.getElementById('tf').value)||1;
       current.setMinutes(current.getMinutes()+gap);
       const t=current.toTimeString().substring(0,5);
       const asset=randomAsset(selectedAssets);
-      output+=`[${t} UTC${tzOffset>=0?'+'+tzOffset:tzOffset}] → ${asset} → Follow Previous Candle\n`;
+      const dir=Math.random()>0.5?'CALL':'PUT';
+      output+=`${asset}  | ${t} | ${dir}\n`;
   }
+  output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;
   typeWrite(output,signalBox);
 }
 
