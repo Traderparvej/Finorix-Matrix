@@ -80,7 +80,6 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
   </div>
 
   <div class="output" id="out"></div>
-
 </div>
 
 <script>
@@ -160,17 +159,19 @@ function updateLicenseStatus(){
 
 function generateWithLicense(){
   if(isLicenseValid()){
-    generateSignals(parseInt(document.getElementById('count').value)||5);
-  }else{
-    const inputKey=prompt("Enter License Key to Activate:");
-    if(inputKey===licenseKey){
-      const now=new Date();
-      now.setDate(now.getDate()+licenseDurationDays);
+    // License active, don't auto-generate signals
+    alert("License is already active ✔️\nYou can now generate signals using the button.");
+  } else {
+    const inputKey = prompt("Enter License Key to Activate:");
+    if(inputKey === licenseKey){
+      const now = new Date();
+      now.setDate(now.getDate() + licenseDurationDays);
       saveLicenseData(now.toISOString());
       updateLicenseStatus();
-      generateSignals(parseInt(document.getElementById('count').value)||5);
-    }else{
-      alert("Invalid License Key!");
+      alert("✅ License Activated! You can now generate signals using the button.");
+      // No automatic signal generation
+    } else {
+      alert("❌ Invalid License Key!");
     }
   }
 }
