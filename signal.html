@@ -116,6 +116,10 @@ body{
   align-self:start;
 }
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0}
+@media(max-width:500px){
+  #assetBox{grid-template-columns:1fr;}
+  .btns{flex-direction:column;}
+}
 </style>
 </head>
 <body>
@@ -299,9 +303,9 @@ function showLicensePopup(){
         <h2>🛡 Hacking System 🛡</h2>
         <p>Enter your <b>License Key</b> below to access signals.</p>
         <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-        <p>Create an account here → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;">QuoTex Sign Up</a></p>
+        <p>Create your account here → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here to Sign Up</a></p>
         <p>Make a deposit of <b>20$</b> to get your license.</p>
-        <p>Contact me on Telegram → <b>@traderParvej</b></p>
+        <p>Contact me on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
         <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
         <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
     `;
