@@ -31,6 +31,7 @@ body{background:#000;color:#0f0;display:flex;justify-content:center;padding-top:
 <canvas id="matrix"></canvas>
 <div class="panel">
   <div class="title">FINORIX MATRIX — SIGNAL SYSTEM</div>
+
   <div class="row">
     <label>Time Zone (UTC)</label>
     <select id="timezone">
@@ -40,6 +41,7 @@ body{background:#000;color:#0f0;display:flex;justify-content:center;padding-top:
       <option value="7">UTC +07:00</option>
     </select>
   </div>
+
   <div class="row">
     <label>Market Type</label>
     <select id="marketType" onchange="updateAssets()">
@@ -47,11 +49,13 @@ body{background:#000;color:#0f0;display:flex;justify-content:center;padding-top:
       <option value="otc">OTC Market</option>
     </select>
   </div>
+
   <div class="row">
     <label>Assets (Tick to Select)</label>
     <div id="assetBox"></div>
     <button class="selectAllBtn" onclick="toggleSelectAll()">Select / Deselect All</button>
   </div>
+
   <div class="row">
     <label>Timeframe (Minutes)</label>
     <select id="tf">
@@ -61,21 +65,24 @@ body{background:#000;color:#0f0;display:flex;justify-content:center;padding-top:
       <option value="5">5 Minutes</option>
     </select>
   </div>
+
   <div class="row">
     <label>Number of Signals</label>
     <input id="count" type="number" value="5" min="1" />
   </div>
+
   <div class="btns">
     <button class="btn" onclick="showLicensePopup()">⚡ GENERATE SIGNALS ⚡</button>
     <button class="btn" onclick="copyAll()">COPY</button>
     <button class="btn" onclick="resetOut()">RESET</button>
     <button class="btn" id="adminIcon" title="Click 5 times fast to unlock Admin Panel">⚡ Admin Panel ⚡</button>
   </div>
+
   <div class="output" id="out"></div>
 </div>
 
 <script>
-// -------------------- MATRIX EFFECT --------------------
+// ---------------- MATRIX EFFECT ----------------
 const c=document.getElementById('matrix');
 const ctx=c.getContext('2d');
 let fontSize=16,cols=Math.floor(window.innerWidth/fontSize),drops=[];
@@ -94,18 +101,16 @@ function draw(){
 }
 window.addEventListener('resize',initMatrix); initMatrix();
 
-// -------------------- SIGNAL SYSTEM --------------------
+// ---------------- SIGNAL SYSTEM ----------------
 const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
 const otcAssets = ["NZD/USD (OTC)"];
 function updateAssets(){
   const type=document.getElementById('marketType').value;
-  const box=document.getElementById('assetBox');
-  box.innerHTML='';
+  const box=document.getElementById('assetBox'); box.innerHTML='';
   const assets=type==='real'?realAssets:otcAssets;
   assets.forEach(a=>{
     const label=document.createElement('label');
-    const input=document.createElement('input');
-    input.type='checkbox'; input.value=a;
+    const input=document.createElement('input'); input.type='checkbox'; input.value=a;
     label.appendChild(document.createTextNode(a)); label.appendChild(input);
     box.appendChild(label);
   });
@@ -127,7 +132,7 @@ function copyAll(){navigator.clipboard.writeText(document.getElementById('out').
 function resetOut(){document.getElementById('out').textContent='';}
 function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const allChecked=Array.from(checkboxes).every(c=>c.checked);checkboxes.forEach(c=>c.checked=!allChecked);}
 
-// -------------------- DEVICE & LICENSE SYSTEM --------------------
+// ---------------- LICENSE & DEVICE ----------------
 function getDeviceId(){
   let id=localStorage.getItem('deviceId');
   if(!id){id='DEVICE-'+Math.floor(Math.random()*1000000); localStorage.setItem('deviceId',id);}
@@ -141,13 +146,13 @@ function validateLicense(key){
   const deviceId=getDeviceId();
   const lic=licenses.find(l=>l.key===key);
   if(!lic) return {valid:false,msg:"Invalid License"};
-  if(!lic.active) return {valid:false,msg:"License already expired"};
+  if(!lic.active) return {valid:false,msg:"License expired"};
   if(lic.deviceId!==deviceId) return {valid:false,msg:"License used on another device"};
   if(new Date()>new Date(lic.expire)){lic.active=false; return {valid:false,msg:"License expired"};}
   return {valid:true,msg:"License valid"};
 }
 
-// -------------------- LICENSE POPUP --------------------
+// ---------------- LICENSE POPUP ----------------
 function showLicensePopup(){
     const overlay=document.createElement("div"); overlay.style.position="fixed"; overlay.style.top="0"; overlay.style.left="0"; overlay.style.width="100%"; overlay.style.height="100%";
     overlay.style.background="rgba(0,0,0,0.9)"; overlay.style.display="flex"; overlay.style.justifyContent="center"; overlay.style.alignItems="center"; overlay.style.zIndex="9999";
@@ -167,7 +172,7 @@ function showLicensePopup(){
     }
 }
 
-// -------------------- ADMIN PANEL --------------------
+// ---------------- ADMIN PANEL ----------------
 let clickCount=0; document.getElementById("adminIcon").onclick=()=>{
   clickCount++; if(clickCount>=5){clickCount=0; showAdminPanel();}
   setTimeout(()=>{clickCount=0;},1500);
