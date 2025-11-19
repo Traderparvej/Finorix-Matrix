@@ -81,8 +81,6 @@ body{
   font-size:14px;
   line-height:1.4;
 }
-
-/* Asset Box */
 #assetBox{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -90,23 +88,19 @@ body{
 }
 #assetBox label{
   display:flex;
-  justify-content:space-between; /* pair name left, checkbox right */
+  justify-content:space-between;
   align-items:center;
-  padding:6px 10px;
+  padding:6px 8px;
   border-radius:6px;
   border:1px solid rgba(0,255,0,0.2);
   transition:.2s;
-  font-size:14px;
-  background: rgba(0,0,0,0.2);
-  word-break: break-word;
+  cursor:pointer;
 }
 #assetBox label:hover{
-  background: rgba(0,255,0,0.05);
-  box-shadow: 0 0 10px #0f0;
+  background:rgba(0,255,0,0.1);
+  box-shadow:0 0 10px #0f0;
 }
 #assetBox input[type="checkbox"]{
-  width:18px;
-  height:18px;
   accent-color:#0f0;
 }
 .selectAllBtn{
@@ -122,27 +116,6 @@ body{
   align-self:start;
 }
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0}
-
-/* Responsive: মোবাইলের জন্য */
-@media screen and (max-width:480px){
-  .panel{
-    width:95%;
-    padding:20px 16px;
-  }
-  #assetBox{
-    grid-template-columns:1fr; /* এক কলামে দেখাবে */
-  }
-  #assetBox label{
-    justify-content:space-between; /* pair name left, checkbox right */
-    padding:6px 10px;
-  }
-  .btns{
-    flex-direction:column; /* বাটনগুলো একে একে দেখাবে */
-  }
-  .btn{
-    width:100%;
-  }
-}
 </style>
 </head>
 <body>
@@ -190,7 +163,7 @@ body{
   </div>
 
   <div class="btns">
-    <button class="btn" onclick="generateSignalsFromInput()">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="showLicensePopup()">⚡ GENERATE SIGNALS ⚡</button>
     <button class="btn" onclick="copyAll()">COPY</button>
     <button class="btn" onclick="resetOut()">RESET</button>
   </div>
@@ -234,12 +207,10 @@ function updateAssets(){
   const assets=type==='real'?realAssets:otcAssets;
   assets.forEach(a=>{
     const label=document.createElement('label');
-    const span = document.createElement('span');
-    span.textContent = a;
     const input=document.createElement('input');
     input.type='checkbox';
     input.value=a;
-    label.appendChild(span);
+    label.appendChild(document.createTextNode(a));
     label.appendChild(input);
     box.appendChild(label);
   });
@@ -263,24 +234,16 @@ function generateSignals(count){
   const tzOffset=parseInt(document.getElementById('timezone').value)||0;
   current.setHours(current.getUTCHours()+tzOffset);
   let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
-
   for(let i=0;i<count;i++){
-      const gap = Math.floor(Math.random() * 6) + 3; // 3–8 মিনিট
-      current.setMinutes(current.getMinutes() + gap);
-
-      const t = current.toTimeString().substring(0,5);
-      const asset = randomAsset(selectedAssets);
-      const dir = Math.random() > 0.5 ? 'CALL' : 'PUT';
-      output += `${asset}  | ${t} | ${dir}\n`;
+      const gap=Math.floor(Math.random()*6)+3; // 3-8 minutes
+      current.setMinutes(current.getMinutes()+gap);
+      const t=current.toTimeString().substring(0,5);
+      const asset=randomAsset(selectedAssets);
+      const dir=Math.random()>0.5?'CALL':'PUT';
+      output+=`${asset}  | ${t} | ${dir}\n`;
   }
-
   output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;
   typeWrite(output,signalBox);
-}
-
-function generateSignalsFromInput(){
-  const count=parseInt(document.getElementById('count').value)||5;
-  generateSignals(count);
 }
 
 function typeWrite(text,element){
@@ -302,6 +265,64 @@ function toggleSelectAll(){
   const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
   const allChecked=Array.from(checkboxes).every(c=>c.checked);
   checkboxes.forEach(c=>c.checked=!allChecked);
+}
+
+// --- License Popup ---
+const validLicenses = ["LIC-12345","LIC-67890"]; // তোমার valid license
+
+function showLicensePopup(){
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.background = "rgba(0,0,0,0.9)";
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "9999";
+
+    const box = document.createElement("div");
+    box.style.background = "#000";
+    box.style.border = "2px solid #0f0";
+    box.style.padding = "30px";
+    box.style.borderRadius = "12px";
+    box.style.maxWidth = "400px";
+    box.style.width = "90%";
+    box.style.color = "#0f0";
+    box.style.fontFamily = "'Share Tech Mono', monospace";
+    box.style.textAlign = "center";
+    box.style.boxShadow = "0 0 25px #0f0";
+
+    box.innerHTML = `
+        <h2>🛡 Hacking System 🛡</h2>
+        <p>Enter your <b>License Key</b> below to access signals.</p>
+        <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
+        <p>Create an account here → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;">QuoTex Sign Up</a></p>
+        <p>Make a deposit of <b>20$</b> to get your license.</p>
+        <p>Contact me on Telegram → <b>@traderParvej</b></p>
+        <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
+        <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    document.getElementById("popupClose").onclick = () => {
+        document.body.removeChild(overlay);
+    }
+
+    document.getElementById("popupSubmit").onclick = () => {
+        const license = document.getElementById("popupLicense").value.trim();
+        if(validLicenses.includes(license)){
+            document.body.removeChild(overlay);
+            const count = parseInt(document.getElementById('count').value) || 5;
+            generateSignals(count);
+        } else {
+            alert("Invalid License! Please contact @traderParvej after creating account and deposit.");
+        }
+    }
 }
 </script>
 </body>
