@@ -41,6 +41,8 @@ body{
   text-shadow:0 0 12px #0f0;
   font-weight:bold;
   cursor:pointer;
+  position: relative;
+  z-index: 999;
 }
 .row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
 .row label{font-size:15px;color:#0f0;font-weight:600}
@@ -292,7 +294,7 @@ function toggleSelectAll(){
 }
 
 // License + Device Lock
-const validLicenses = [{key:"LIC-12345",device:""}]; // replace device="" dynamically
+let validLicenses = [{key:"LIC-12345",device:""}]; // Add more licenses here
 function showLicensePopup(){
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
@@ -351,15 +353,17 @@ function showLicensePopup(){
     }
 }
 
-// Admin Panel Unlock
+// Admin Panel Unlock (FIXED)
 let adminClick = 0;
 const adminPanel = document.getElementById('adminPanel');
-document.getElementById('panelTitle').addEventListener('click', () => {
+const titleBtn = document.getElementById('panelTitle');
+titleBtn.addEventListener("click", () => {
     adminClick++;
-    if(adminClick>=5){
-        adminPanel.style.display='block';
-        adminClick=0;
-        alert("⚡ Admin Panel Unlocked ⚡");
+    if(adminClick >= 5){
+        adminPanel.style.display = "block";
+        adminClick = 0;
+        adminPanel.scrollIntoView({ behavior: "smooth" });
+        setTimeout(()=>{alert("⚡ Admin Panel Unlocked ⚡");},300);
     }
 });
 function hideAdmin(){adminPanel.style.display='none';}
