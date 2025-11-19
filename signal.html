@@ -81,6 +81,8 @@ body{
   font-size:14px;
   line-height:1.4;
 }
+
+/* Asset Box */
 #assetBox{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -88,20 +90,23 @@ body{
 }
 #assetBox label{
   display:flex;
+  justify-content:space-between; /* pair name left, checkbox right */
   align-items:center;
-  gap:8px;
-  cursor:pointer;
-  padding:6px 12px;
+  padding:6px 10px;
   border-radius:6px;
   border:1px solid rgba(0,255,0,0.2);
   transition:.2s;
-  word-break:break-word; /* মোবাইলে text wrap */
+  font-size:14px;
+  background: rgba(0,0,0,0.2);
+  word-break: break-word;
 }
 #assetBox label:hover{
-  background:rgba(0,255,0,0.1);
-  box-shadow:0 0 10px #0f0;
+  background: rgba(0,255,0,0.05);
+  box-shadow: 0 0 10px #0f0;
 }
 #assetBox input[type="checkbox"]{
+  width:18px;
+  height:18px;
   accent-color:#0f0;
 }
 .selectAllBtn{
@@ -128,7 +133,7 @@ body{
     grid-template-columns:1fr; /* এক কলামে দেখাবে */
   }
   #assetBox label{
-    justify-content:flex-start; /* checkbox + text এক লাইনে থাকবে */
+    justify-content:space-between; /* pair name left, checkbox right */
     padding:6px 10px;
   }
   .btns{
@@ -229,11 +234,13 @@ function updateAssets(){
   const assets=type==='real'?realAssets:otcAssets;
   assets.forEach(a=>{
     const label=document.createElement('label');
+    const span = document.createElement('span');
+    span.textContent = a;
     const input=document.createElement('input');
     input.type='checkbox';
     input.value=a;
+    label.appendChild(span);
     label.appendChild(input);
-    label.appendChild(document.createTextNode(' '+a));
     box.appendChild(label);
   });
 }
