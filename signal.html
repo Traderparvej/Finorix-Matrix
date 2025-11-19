@@ -41,8 +41,6 @@ body{
   text-shadow:0 0 12px #0f0;
   font-weight:bold;
   cursor:pointer;
-  position: relative;
-  z-index: 999;
 }
 .row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
 .row label{font-size:15px;color:#0f0;font-weight:600}
@@ -294,7 +292,7 @@ function toggleSelectAll(){
 }
 
 // License + Device Lock
-let validLicenses = [{key:"LIC-12345",device:""}]; // Add more licenses here
+const validLicenses = [{key:"LIC-12345",device:""}]; // device assigned dynamically
 function showLicensePopup(){
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
@@ -360,10 +358,10 @@ const titleBtn = document.getElementById('panelTitle');
 titleBtn.addEventListener("click", () => {
     adminClick++;
     if(adminClick >= 5){
-        adminPanel.style.display = "block";
-        adminClick = 0;
-        adminPanel.scrollIntoView({ behavior: "smooth" });
-        setTimeout(()=>{alert("⚡ Admin Panel Unlocked ⚡");},300);
+        adminPanel.style.display = "block"; // panel দেখাও
+        adminPanel.scrollIntoView({ behavior: "smooth" }); // scroll
+        setTimeout(()=>{alert("⚡ Admin Panel Unlocked ⚡");}, 100); // alert delay
+        adminClick = 0; // reset
     }
 });
 function hideAdmin(){adminPanel.style.display='none';}
