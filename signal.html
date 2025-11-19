@@ -130,15 +130,18 @@ function generateSignals(count){
   const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
   const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
 
-  let current=new Date();
   const tzOffset=parseInt(document.getElementById('timezone').value)||0;
-  current.setHours(current.getUTCHours()+tzOffset);
+  let now = new Date();
+  let current = new Date(now.getTime() + tzOffset*60*60*1000); // UTC + tzOffset
+
+  const day = String(current.getUTCDate()).padStart(2,'0');
+  const month = String(current.getUTCMonth()+1).padStart(2,'0');
+  const year = current.getUTCFullYear();
 
   let output=
-`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️
+`▶️ DATE: ${day}.${month}.${year} ◀️
 
 ⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕
-
 
           😈 FINORIX MATRIX 😈
 
@@ -150,7 +153,7 @@ function generateSignals(count){
     const gap=Math.floor(Math.random()*6)+3;
     current.setMinutes(current.getMinutes()+gap);
 
-    const t=current.toTimeString().substring(0,5);
+    const t = String(current.getUTCHours()).padStart(2,'0') + ':' + String(current.getUTCMinutes()).padStart(2,'0');
     const asset=randomAsset(selectedAssets);
     const dir=Math.random()>0.5?'CALL':'PUT';
 
