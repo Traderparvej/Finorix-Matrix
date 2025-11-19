@@ -25,9 +25,6 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 #assetBox input[type="checkbox"]{accent-color:#0f0;}
 .selectAllBtn{margin-top:6px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:6px 10px;border-radius:6px;cursor:pointer;color:#0f0;text-shadow:0 0 4px #0f0;font-size:13px;align-self:start;}
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0;}
-#adminPanel{display:none;margin-top:20px;padding:20px;border:2px solid #0f0;border-radius:12px;background:rgba(0,0,0,0.7);}
-#adminPanel h3{text-align:center;color:#0f0;margin-bottom:12px;}
-#adminPanel p{color:#0f0;font-size:14px;}
 @media(max-width:500px){#assetBox{grid-template-columns:1fr;} .btns{flex-direction:column;}}
 </style>
 </head>
@@ -84,12 +81,6 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 
   <div class="output" id="out"></div>
 
-  <!-- Admin Panel -->
-  <div id="adminPanel">
-    <h3>ADMIN PANEL</h3>
-    <p>Manage licenses, devices, etc.</p>
-    <button onclick="hideAdmin()" style="padding:8px 12px; border:none; background:#0f0; color:#000; border-radius:6px; cursor:pointer;">Close Admin Panel</button>
-  </div>
 </div>
 
 <script>
@@ -181,18 +172,6 @@ function generateWithLicense(){
 }
 
 updateLicenseStatus();
-
-// ---------------- Admin Panel ----------------
-let adminClickCount=0;
-const adminPanel=document.getElementById('adminPanel');
-document.getElementById("panelTitle").addEventListener('click',()=>{
-  adminClickCount++;
-  if(adminClickCount>=5){
-    adminClickCount=0;
-    adminPanel.style.display='block';
-  }
-});
-function hideAdmin(){adminPanel.style.display='none';}
 </script>
 </body>
 </html>
