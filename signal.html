@@ -121,49 +121,41 @@ function copyAll(){navigator.clipboard.writeText(document.getElementById('out').
 function resetOut(){document.getElementById('out').textContent='';}
 function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const allChecked=Array.from(checkboxes).every(c=>c.checked);checkboxes.forEach(c=>c.checked=!allChecked);}
 
-// License system with device lock
-let validLicenses = {}; // object to store {deviceID: {expiry:timestamp}}
+// License + popup
+let validLicenses = {}; // store licenses
 function showLicensePopup(){
-    const licenseInput = prompt("Enter License Key:");
-    if(!licenseInput)return;
-    const deviceId = localStorage.getItem("deviceId") || crypto.randomUUID();
-    localStorage.setItem("deviceId", deviceId);
-    if(validLicenses[licenseInput]){
-        const expiry = new Date(validLicenses[licenseInput].expiry);
-        const now = new Date();
-        if(validLicenses[licenseInput].device && validLicenses[licenseInput].device!==deviceId){alert("License used on another device!"); return;}
-        if(now>expiry){alert("License expired!"); return;}
-        validLicenses[licenseInput].device=deviceId;
-        const count = parseInt(document.getElementById('count').value)||5;
-        generateSignals(count);
-    } else alert("Invalid License!");
+    const overlay=document.createElement("div");
+    overlay.style.position="fixed";overlay.style.top="0";overlay.style.left="0";overlay.style.width="100%";overlay.style.height="100%";overlay.style.background="rgba(0,0,0,0.9)";overlay.style.display="flex";overlay.style.justifyContent="center";overlay.style.alignItems="center";overlay.style.zIndex="9999";
+    const box=document.createElement("div");
+    box.style.background="#000";box.style.border="2px solid #0f0";box.style.padding="30px";box.style.borderRadius="12px";box.style.maxWidth="400px";box.style.width="90%";box.style.color="#0f0";box.style.fontFamily="'Share Tech Mono', monospace";box.style.textAlign="center";box.style.boxShadow="0 0 25px #0f0";
+    box.innerHTML=`<h2>🛡 Hacking System 🛡</h2>
+        <p>Enter your <b>License Key</b> below to access signals.</p>
+        <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
+        <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
+        <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>`;
+    overlay.appendChild(box);document.body.appendChild(overlay);
+    document.getElementById("popupClose").onclick=()=>document.body.removeChild(overlay);
+    document.getElementById("popupSubmit").onclick=()=>{
+        const licenseInput=document.getElementById("popupLicense").value.trim();
+        if(!licenseInput){alert("Enter license!");return;}
+        const deviceId=localStorage.getItem("deviceId")||crypto.randomUUID();localStorage.setItem("deviceId",deviceId);
+        if(validLicenses[licenseInput]){
+            const lic=validLicenses[licenseInput];
+            const now=new Date();
+            if(lic.device && lic.device!==deviceId){alert("License used on another device!");return;}
+            if(new Date(lic.expiry)<now){alert("License expired!");return;}
+            lic.device=deviceId;document.body.removeChild(overlay);const count=parseInt(document.getElementById('count').value)||5;generateSignals(count);
+        }else alert("Invalid License!");
+    }
 }
 
 // Admin panel
-let adminClick=0;
-const adminPanel=document.getElementById('adminPanel');
+let adminClick=0;const adminPanel=document.getElementById('adminPanel');
 document.getElementById('panelTitle').addEventListener('click',()=>{
-    adminClick++;
-    if(adminClick>=5){
-        const pass=prompt("Enter Admin Password:");
-        if(pass==="@TraderParvej@"){
-            adminPanel.style.display="block";
-        }
-        adminClick=0;
-    }
+    adminClick++;if(adminClick>=5){const pass=prompt("Enter Admin Password:");if(pass==="@TraderParvej@"){adminPanel.style.display="block";}adminClick=0;}
 });
 function hideAdmin(){adminPanel.style.display="none";}
-
-// Give license function
-function giveLicense(){
-    const device=document.getElementById("newDevice").value.trim();
-    const expiry=document.getElementById("newExpiry").value;
-    if(!device || !expiry){alert("Fill all fields!");return;}
-    const now=new Date();
-    if(validLicenses[device] && new Date(validLicenses[device].expiry)>now){alert("Device already has active license!");return;}
-    validLicenses[device]={expiry:expiry, device:device};
-    alert("License saved!");
-}
+function giveLicense(){const device=document.getElementById("newDevice").value.trim();const expiry=document.getElementById("newExpiry").value;if(!device||!expiry){alert("Fill all fields!");return;}const now=new Date();if(validLicenses[device] && new Date(validLicenses[device].expiry)>now){alert("Device already has active license!");return;}validLicenses[device]={expiry:expiry,device:device};alert("License saved!");}
 </script>
 </body>
 </html>
