@@ -1,254 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Finorix-Matrix — AI Real Time Signal</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finorix Matrix AI — Signal Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0a0f22;
-  --panel:#121a38;
-  --muted:#9fb0d6;
-  --text:#ffffff;
-  --accent:#5ac8fa;
-  --green:#4caf50;
-  --red:#f44336;
-}
-*{box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Share Tech Mono', monospace}
 body{
-  margin:0;
-  font-family:Inter,system-ui,Arial;
-  background:linear-gradient(180deg,#06102a,#0a0f22);
-  color:var(--text);
+  background:#000;
+  overflow:hidden;
+  min-height:100vh;
+  color:#0f0;
 }
-.wrap{max-width:1100px;margin:20px auto;padding:20px;}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-header h1{margin:0;font-size:22px;display:flex;align-items:center;gap:10px;font-weight:700;}
-.license-section, .market-section, #adminPanel{
-  background:var(--panel);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
+#matrix{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  z-index:-1;
 }
-label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px;}
-input, select, button{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);font-weight:500;}
-input, select{background:#fff;color:#000;}
-button{background:var(--accent);color:#000;font-weight:700;cursor:pointer;transition:0.18s;border:none;}
-button:hover{opacity:0.9;}
-.license-status{margin-top:6px;font-weight:600;font-size:14px;}
-.device-id{font-size:13px;color:var(--muted);margin-top:4px;}
-.asset-checkbox{max-height:200px;overflow-y:auto;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px;background:rgba(255,255,255,0.05);}
-.asset-checkbox label{cursor:pointer;display:block;margin-bottom:4px;}
-.controls{display:flex;gap:10px;margin-top:12px;}
-.controls button{flex:1;}
-#adminPanel{display:none;}
-.code-box{word-break:break-all;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;margin-top:10px;font-family:monospace;font-size:13px;}
-footer{text-align:center;color:#9fb0d6;font-size:13px;margin-top:20px;}
-#loginPopup, .signal-modal-backdrop, .analysis-overlay, .admin-login-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1500;}
-.popup-content, .signal-modal, .admin-login{background:var(--panel);padding:16px;border-radius:14px;color:#fff;width:90%;max-width:380px;box-shadow:0 12px 30px rgba(0,0,0,0.6);}
-.signal-text{white-space:pre-wrap;font-family:'Courier New',monospace;font-size:13px;line-height:1.45;color:#eee;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;margin-bottom:8px;}
-.analysis-overlay .spinner{width:50px;height:50px;border:6px solid #eee;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:auto;}
-@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-@media (max-width:880px){.grid{grid-template-columns:1fr;}}
+.panel{
+  width:90%;
+  max-width:900px;
+  margin:40px auto;
+  background:rgba(0,0,0,0.6);
+  border:1px solid #0f0;
+  padding:30px 28px;
+  border-radius:12px;
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 35px rgba(0,255,0,0.12);
+}
+.title{
+  text-align:center;
+  font-size:24px;
+  margin-bottom:24px;
+  text-shadow:0 0 12px #0f0;
+  font-weight:bold;
+}
+.row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.row label{font-size:15px;color:#0f0;font-weight:600}
+.row select,.row input{
+  width:100%;
+  padding:12px;
+  background:#000;
+  border:1px solid #0f0;
+  color:#0f0;
+  border-radius:8px;
+  outline:none;
+  font-size:14px;
+}
+.btns{display:flex;gap:12px;margin-top:12px}
+.btn{
+  flex:1;
+  padding:12px;
+  background:linear-gradient(90deg,#00ff0f,#00cc8a);
+  border:1px solid #0f0;
+  color:#000;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:bold;
+  text-shadow:0 0 6px #0f0;
+  transition:.2s;
+  box-shadow:0 0 20px rgba(0,255,0,0.5);
+}
+.btn:hover{background:linear-gradient(90deg,#00cc8a,#00ff0f);box-shadow:0 0 24px #0f0}
+.output{
+  margin-top:20px;
+  padding:14px;
+  border:1px dashed rgba(0,255,0,0.3);
+  min-height:180px;
+  white-space:pre-line;
+  overflow-y:auto;
+  border-radius:8px;
+  font-size:14px;
+}
+#assetBox label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid rgba(0,255,0,0.2);
+  transition:.2s;
+}
+#assetBox label:hover{
+  background:rgba(0,255,0,0.1);
+  box-shadow:0 0 10px #0f0;
+}
+#assetBox input[type="checkbox"]{
+  accent-color:#0f0;
+}
+.selectAllBtn{
+  margin-top:6px;
+  background:rgba(0,0,0,0.6);
+  border:1px solid #0f0;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  color:#0f0;
+  text-shadow:0 0 4px #0f0;
+  font-size:13px;
+}
+.selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-<h1>🚀 Finorix-Matrix — AI Real Time Signal</h1>
-<div>
-<span class="license-status" id="licenseStatus">License Inactive ❌</span>
-<div class="device-id" id="deviceIdDiv"></div>
-</div>
-</header>
+<canvas id="matrix"></canvas>
+<div class="panel">
+  <div class="title">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
-<!-- License Section -->
-<section class="license-section">
-<h3>💳 License Activation</h3>
-<label>Enter License Key (Member)</label>
-<input type="text" id="licenseInput" placeholder="Paste license key here">
-<button id="activateBtn" style="margin-top:10px;">Activate License</button>
-</section>
-
-<!-- Market & Assets Section -->
-<section class="market-section">
-<div class="grid">
-  <div>
-    <label>Market</label>
-    <select id="market">
-      <option value="OTC">OTC</option>
-      <option value="REAL">REAL</option>
+  <div class="row">
+    <label>Time Zone (UTC)</label>
+    <select id="timezone">
+      <option value="6" selected>Bangladesh (UTC +06:00)</option>
+      <option value="5">Pakistan (UTC +05:00)</option>
+      <option value="0">UTC +00:00</option>
+      <option value="7">UTC +07:00</option>
     </select>
   </div>
-  <div>
-    <label>Timeframe</label>
-    <select id="timeframe">
-      <option value="1m" selected>1 minute</option>
-      <option value="5m">5 minutes</option>
-      <option value="15m">15 minutes</option>
-      <option value="1h">1 hour</option>
+
+  <div class="row">
+    <label>Market Type</label>
+    <select id="marketType" onchange="updateAssets()">
+      <option value="real">Real Market</option>
+      <option value="otc">OTC Market</option>
     </select>
   </div>
-  <div>
-    <label>Assets (Tap to select multiple)</label>
-    <div id="assetContainer" class="asset-checkbox"></div>
+
+  <div class="row">
+    <label>Assets (Tick to Select)</label>
+    <div id="assetBox" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
+    <button class="selectAllBtn" onclick="toggleSelectAll()">Select / Deselect All</button>
   </div>
 
-  <div>
+  <div class="row">
+    <label>Timeframe (Minutes)</label>
+    <select id="tf">
+      <option value="1">1 Minute</option>
+      <option value="2">2 Minutes</option>
+      <option value="3">3 Minutes</option>
+      <option value="5">5 Minutes</option>
+    </select>
+  </div>
+
+  <div class="row">
     <label>Number of Signals</label>
-    <input type="number" id="numSignals" value="1" min="1">
+    <input id="count" type="number" value="5" min="1" />
   </div>
 
-  <div>
-    <label>Signal Mode</label>
-    <select id="signalMode">
-      <option value="OPPOSITE" selected>Opposite Candle</option>
-      <option value="CALL">Call (Only)</option>
-      <option value="PUT">Put (Only)</option>
-      <option value="BOTH">Both (Call/Put)</option>
-    </select>
+  <div class="btns">
+    <button class="btn" onclick="generateSignalsFromInput()">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="copyAll()">COPY</button>
+    <button class="btn" onclick="resetOut()">RESET</button>
   </div>
-</div>
-<div class="controls">
-<button id="generate">Generate Signal</button>
-<button id="reset">Reset</button>
-</div>
-</section>
 
-<!-- Admin Panel -->
-<section id="adminPanel">
-<h3>🔧 Admin — License Generator</h3>
-<div>
-<label>Device ID to give license</label>
-<input type="text" id="adminDeviceId" placeholder="Enter device ID">
+  <div class="output" id="out"></div>
 </div>
-<div style="margin-top:8px;">
-<label>License Duration (days)</label>
-<input type="number" id="adminDuration" placeholder="e.g. 15" min="1">
-</div>
-<div class="controls" style="margin-top:10px;">
-<button id="generateLicenseBtn" style="background:var(--green);color:#fff;">Generate License</button>
-<button id="copyLastLicenseBtn" style="background:var(--accent);color:#000;">Copy Last</button>
-</div>
-<div class="code-box" id="generatedBox">Generated license will appear here.</div>
-</section>
-
-<footer>
-© Finorix-Matrix — Advance signals
-<div style="margin-top:4px;font-size:10px;">
-<button id="showAdminLoginBtn" style="background:transparent;border:none;color:#9fb0d6;cursor:pointer;">Admin Login</button>
-</div>
-</footer>
-
-<!-- JS Logic -->
 <script>
-const ADMIN_PASSWORD="@Traderparvej@";
-const LICENSE_STORAGE_PREFIX="finorix_license_";
-let deviceId=localStorage.getItem("finorix_device_id");
-if(!deviceId){deviceId=String(Math.floor(Math.random()*900000000+100000000));localStorage.setItem("finorix_device_id",deviceId);}
-document.getElementById('deviceIdDiv').textContent="Device ID: "+deviceId;
+const realAssets = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/JPY", "EUR/JPY", "GBP/JPY", "USD/CAD", "AUD/CAD", "EUR/GBP", "USD/CHF"];
+const otcAssets = ["NZD/USD (OTC)"];
 
-// Elements
-const licenseInput=document.getElementById('licenseInput');
-const activateBtn=document.getElementById('activateBtn');
-const licenseStatus=document.getElementById('licenseStatus');
-const adminPanel=document.getElementById('adminPanel');
-const adminDeviceIdInput=document.getElementById('adminDeviceId');
-const adminDurationInput=document.getElementById('adminDuration');
-const generateLicenseBtn=document.getElementById('generateLicenseBtn');
-const generatedBox=document.getElementById('generatedBox');
-const copyLastLicenseBtn=document.getElementById('copyLastLicenseBtn');
-const marketSel=document.getElementById('market');
-const assetContainer=document.getElementById('assetContainer');
-const timeframe=document.getElementById('timeframe');
-const generateBtn=document.getElementById('generate');
-const resetBtn=document.getElementById('reset');
-const signalModal=document.createElement('div'); // Placeholder
-const signalText=document.createElement('div'); // Placeholder
-const signalModeSel=document.getElementById('signalMode');
-
-let licenseActive=false;
-let lastGenerated=null;
-
-const OTCpairs=[ "USD/ARS (OTC)","USD/BDT (OTC)","USD/EGP (OTC)"];
-const REALpairs=['EUR/JPY','USD/JPY','EUR/USD'];
-
-function fillAssetContainer(){
-  assetContainer.innerHTML='';
-  const pairs=marketSel.value==='REAL'?REALpairs:OTCpairs;
-  pairs.forEach(p=>{
-    const label=document.createElement('label');
-    const checkbox=document.createElement('input');
-    checkbox.type='checkbox';
-    checkbox.value=p;
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(p));
-    assetContainer.appendChild(label);
+function updateAssets(){
+  const type = document.getElementById('marketType').value;
+  const box = document.getElementById('assetBox');
+  box.innerHTML = '';
+  const assets = type === 'real' ? realAssets : otcAssets;
+  assets.forEach(a => {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = a;
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(' ' + a));
+    box.appendChild(label);
   });
 }
-fillAssetContainer();
-marketSel.addEventListener('change',fillAssetContainer);
+updateAssets();
 
-function makeLicenseKeyForDevice(dev,days){
-  const now=Date.now();
-  const expiry=now+days*24*60*60*1000;
-  const rand=Math.floor(Math.random()*900000+100000);
-  const payload=`${dev}|${expiry}|${rand}`;
-  return btoa(payload);
-}
-
-function validateLicenseKeyForThisDevice(key,dev){
-  try{
-    const decoded=atob(key);
-    const [dId,expiryStr]=decoded.split("|");
-    const expiry=parseInt(expiryStr,10);
-    return String(dId)===String(dev) && Date.now()<=expiry;
-  }catch(e){return false;}
-}
-
-function saveLicenseToLocal(key){localStorage.setItem(LICENSE_STORAGE_PREFIX+deviceId,key);}
-function loadLicenseLocal(){
-  const key=localStorage.getItem(LICENSE_STORAGE_PREFIX+deviceId);
-  if(!key) return false;
-  if(validateLicenseKeyForThisDevice(key,deviceId)){
-    licenseStatus.textContent="License Active ✅";
-    licenseActive=true;
-    return true;
+function randomAsset(selectedAssets){
+  if(selectedAssets.length>0){
+    return selectedAssets[Math.floor(Math.random()*selectedAssets.length)];
+  }else{
+    return realAssets[Math.floor(Math.random()*realAssets.length)];
   }
-  return false;
 }
-loadLicenseLocal();
 
-activateBtn.addEventListener('click',()=>{
-  const entered=licenseInput.value.trim();
-  if(!entered){alert("Paste license key.");return;}
-  if(validateLicenseKeyForThisDevice(entered,deviceId)){
-    saveLicenseToLocal(entered);
-    licenseStatus.textContent="License Active ✅";
-    licenseActive=true;
-    alert("✅ License activated successfully!");
-  }else alert("❌ Invalid or expired license.");
-});
+function randomTimeGap(){
+  return parseInt(document.getElementById('tf').value)||1;
+}
 
-generateLicenseBtn.addEventListener('click',()=>{
-  const dev=adminDeviceIdInput.value.trim();
-  const days=parseInt(adminDurationInput.value,10);
-  if(!dev||!days){alert("Enter device ID and duration.");return;}
-  const key=makeLicenseKeyForDevice(dev,days);
-  lastGenerated=key;
-  generatedBox.textContent=key;
-});
-copyLastLicenseBtn.addEventListener('click',()=>{if(lastGenerated)navigator.clipboard.writeText(lastGenerated);});
+function generateSignals(count){
+  const signalBox=document.getElementById("out");
+  signalBox.textContent="";
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+  let current=new Date();
+  const tzOffset=parseInt(document.getElementById('timezone').value)||0;
+  current.setHours(current.getUTCHours()+tzOffset);
+  let output="";
+  for(let i=0;i<count;i++){
+      const gap=randomTimeGap();
+      current.setMinutes(current.getMinutes()+gap);
+      const t=current.toTimeString().substring(0,5);
+      const asset=randomAsset(selectedAssets);
+      output+=`[${t} UTC${tzOffset>=0?'+'+tzOffset:tzOffset}] → ${asset} → Follow Previous Candle\n`;
+  }
+  typeWrite(output,signalBox);
+}
 
-document.getElementById('showAdminLoginBtn').addEventListener('click',()=>{
-  const pass=prompt("Enter Admin Password:");
-  if(pass===ADMIN_PASSWORD){
-    adminPanel.style.display='block';
-  }else alert("Wrong password.");
-});
+function generateSignalsFromInput(){
+  const count=parseInt(document.getElementById('count').value)||5;
+  generateSignals(count);
+}
 
-resetBtn.addEventListener('click',()=>{assetContainer.querySelectorAll('input').forEach(c=>c.checked=false);});
+function typeWrite(text,element){
+  let index=0;
+  element.textContent="";
+  function type(){
+      if(index<text.length){
+          element.textContent+=text.charAt(index);
+          index++;
+          setTimeout(type,15);
+      }
+  }
+  type();
+}
+
+function copyAll(){navigator.clipboard.writeText(document.getElementById('out').textContent);}
+function resetOut(){document.getElementById('out').textContent='';}
+function toggleSelectAll(){
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const allChecked=Array.from(checkboxes).every(c=>c.checked);
+  checkboxes.forEach(c=>c.checked=!allChecked);
+}
 </script>
 </body>
 </html>
