@@ -91,10 +91,11 @@ body{
   align-items:center;
   gap:8px;
   cursor:pointer;
-  padding:6px 8px;
+  padding:6px 12px;
   border-radius:6px;
   border:1px solid rgba(0,255,0,0.2);
   transition:.2s;
+  word-break:break-word; /* মোবাইলে text wrap */
 }
 #assetBox label:hover{
   background:rgba(0,255,0,0.1);
@@ -125,6 +126,10 @@ body{
   }
   #assetBox{
     grid-template-columns:1fr; /* এক কলামে দেখাবে */
+  }
+  #assetBox label{
+    justify-content:flex-start; /* checkbox + text এক লাইনে থাকবে */
+    padding:6px 10px;
   }
   .btns{
     flex-direction:column; /* বাটনগুলো একে একে দেখাবে */
