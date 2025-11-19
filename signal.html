@@ -129,47 +129,31 @@ function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox
 
 // ---------------- License ----------------
 const licenseKey="@FINORIXMATRIX";
+const masterLicenseKey="@FINORIXMATRIXMASTER"; // Works on all devices
 const licenseDurationDays=10;
 
-function getLicenseData(){
-  return JSON.parse(localStorage.getItem("licenseData")||'{}');
-}
-
-function saveLicenseData(expiry){
-  localStorage.setItem("licenseData",JSON.stringify({expiry:expiry}));
-}
-
-function isLicenseValid(){
-  const data=getLicenseData();
-  if(!data.expiry) return false;
-  return new Date(data.expiry) > new Date();
-}
-
-function updateLicenseStatus(){
-  const statusDiv=document.getElementById('licenseStatus');
-  if(isLicenseValid()){
-    const data=getLicenseData();
-    statusDiv.textContent=`License Active ✔️ | Expires: ${new Date(data.expiry).toLocaleString()}`;
-    return true;
-  }else{
-    statusDiv.textContent="License Inactive ⚠️";
-    return false;
-  }
-}
+function getLicenseData(){ return JSON.parse(localStorage.getItem("licenseData")||'{}'); }
+function saveLicenseData(expiry){ localStorage.setItem("licenseData",JSON.stringify({expiry:expiry})); }
+function isLicenseValid(){ const data=getLicenseData(); if(!data.expiry) return false; return new Date(data.expiry) > new Date(); }
+function updateLicenseStatus(){ const statusDiv=document.getElementById('licenseStatus'); if(isLicenseValid()){ const data=getLicenseData(); statusDiv.textContent=`License Active ✔️ | Expires: ${new Date(data.expiry).toLocaleString()}`; return true; }else{ statusDiv.textContent="License Inactive ⚠️"; return false; } }
 
 function generateWithLicense(){
+  const inputKey = prompt("Enter License Key to Activate:");
+  if(inputKey === masterLicenseKey){
+    alert("✅ Master License Activated! Signals can now be generated on ANY device.");
+    generateSignals(parseInt(document.getElementById('count').value)||5);
+    return;
+  }
+
   if(isLicenseValid()){
-    // License active, don't auto-generate signals
     alert("License is already active ✔️\nYou can now generate signals using the button.");
   } else {
-    const inputKey = prompt("Enter License Key to Activate:");
     if(inputKey === licenseKey){
       const now = new Date();
       now.setDate(now.getDate() + licenseDurationDays);
       saveLicenseData(now.toISOString());
       updateLicenseStatus();
       alert("✅ License Activated! You can now generate signals using the button.");
-      // No automatic signal generation
     } else {
       alert("❌ Invalid License Key!");
     }
