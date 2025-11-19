@@ -1,157 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Finorix Matrix AI — Login</title>
-  <style>
-    :root{
-      --bg:#000000;
-      --panel:#0d0d0d;
-      --green:#00ff8a;
-      --glow:0 0 25px rgba(0,255,138,0.7);
-      --text:#ffffff;
-      --muted:#9f9f9f;
-    }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Consolas, monospace;}
-
-    body{
-      background: radial-gradient(circle at center, #0a0a0a, #000000 70%);
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:var(--text);
-      overflow:hidden;
-    }
-
-    /* Matrix Rain */
-    canvas#matrix{
-      position:fixed;
-      top:0;left:0;
-      width:100%;height:100%;
-      z-index:-1;
-      opacity:0.2;
-    }
-
-    .login-box{
-      width: 360px;
-      background: var(--panel);
-      padding: 35px;
-      border-radius: 14px;
-      box-shadow: var(--glow);
-      border:1px solid rgba(0,255,138,0.4);
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float{
-      0%,100%{transform:translateY(0);}
-      50%{transform:translateY(-6px);}
-    }
-
-    .logo{
-      text-align:center;
-      margin-bottom:20px;
-      font-size:28px;
-      font-weight:bold;
-      color:var(--green);
-      text-shadow: var(--glow);
-    }
-
-    .hack-logo{
-      width:90px;
-      margin:0 auto 15px;
-      display:block;
-      filter: drop-shadow(0 0 12px rgba(0,255,138,0.9));
-    }
-
-    .input{
-      width:100%;
-      padding:12px;
-      outline:none;
-      border:1px solid var(--green);
-      background:#000;
-      color:var(--text);
-      border-radius:6px;
-      margin-bottom:15px;
-      box-shadow: var(--glow);
-    }
-
-    button{
-      width:100%;
-      padding:12px;
-      border:none;
-      border-radius:6px;
-      background:var(--green);
-      color:#000;
-      font-size:16px;
-      cursor:pointer;
-      box-shadow: var(--glow);
-      transition:0.2s;
-    }
-
-    button:hover{
-      background:#33ffaa;
-      box-shadow:0 0 35px rgba(0,255,138,0.9);
-    }
-
-    .support{
-      margin-top:15px;
-      text-align:center;
-      font-size:14px;
-      color:var(--muted);
-    }
-    .support a{
-      color:var(--green);
-      text-decoration:none;
-      font-weight:bold;
-      text-shadow: var(--glow);
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finorix Matrix AI — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Share Tech Mono', monospace}
+body{
+  background:#000;
+  overflow:hidden;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#0f0;
+}
+/* Matrix Rain */
+canvas#matrix{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  z-index:-1;
+  background:#000;
+}
+/* Glass Login Box */
+.login-box{
+  width:380px;
+  padding:28px 30px;
+  border:1px solid #0f0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(6px);
+  border-radius:10px;
+  box-shadow:0 0 35px rgba(0,255,0,0.04);
+}
+.header{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:18px}
+.logo{
+  width:62px;height:62px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(0,255,128,0.06),rgba(0,255,200,0.03));border:1px solid rgba(0,255,0,0.12);box-shadow:0 6px 18px rgba(0,255,0,0.04);
+}
+.logo svg{width:46px;height:46px;filter:drop-shadow(0 6px 16px rgba(0,255,0,0.08))}
+.login-box h2{
+  text-align:center;
+  margin:0;
+  color:#0f0;
+  text-shadow:0 0 8px #0f0;
+  font-size:18px;
+}
+.input-group{margin-top:16px;margin-bottom:18px}
+.input-group label{font-size:13px;color:#0f0}
+.input-group input{
+  width:100%;
+  padding:10px;
+  background:#000;
+  border:1px solid #0f0;
+  color:#0f0;
+  border-radius:6px;
+  margin-top:8px;
+  outline:none;
+  text-shadow:0 0 4px #0f0;
+}
+button{
+  width:100%;padding:12px;margin-top:8px;
+  background:#000;
+  border:1px solid #0f0;
+  color:#0f0;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.16s;
+  text-shadow:0 0 4px #0f0;
+}
+button:hover{
+  background:rgba(0,51,0,0.6);
+  box-shadow:0 0 12px #0f0;
+}
+.error{
+  margin-top:12px;text-align:center;color:#f00;text-shadow:0 0 5px #f00;display:none
+}
+.support{display:block;margin-top:12px;text-align:center;color:#0f0;text-decoration:none;font-size:13px;border:1px dashed rgba(0,255,0,0.08);padding:8px;border-radius:6px}
+.support:hover{box-shadow:0 0 12px rgba(0,255,0,0.06)}
+.small{margin-top:8px;font-size:12px;color:#0f0;opacity:0.7;text-align:center}
+</style>
 </head>
-
 <body>
 <canvas id="matrix"></canvas>
-
 <div class="login-box">
-  <img src="https://i.ibb.co/VD1cMG0/hacker-logo-red.png" class="hack-logo" />
-  <div class="logo">FINORIX MATRIX — AI SYSTEM</div>
-  <input type="password" class="input" placeholder="Enter Access Code…" id="pass" />
-  <button onclick="login()">ACCESS SYSTEM</button>
-  <div class="support">
-    Support: <a href="https://t.me/TraderParvej_Community">Telegram Group</a>
+  <div class="header">
+    <div class="logo" aria-hidden="true">
+      <!-- Hacking-style emblem SVG -->
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="2" y="2" width="60" height="60" rx="8" fill="rgba(0,255,0,0.06)" stroke="rgba(0,255,0,0.14)" stroke-width="1"/>
+        <path d="M16 40c6-8 12-8 20 0s14 8 20 0" stroke="#00ff8a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+        <path d="M20 24h24M22 30h20" stroke="#00ff8a" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="48" cy="16" r="3" fill="#ccffde" opacity="0.95"/>
+      </svg>
+    </div>
   </div>
-</div>
 
+  <h2>Finorix Matrix Access</h2>
+  <div class="input-group">
+    <label>Password</label>
+    <input type="password" id="pass" placeholder="Enter Access Key" />
+  </div>
+  <button onclick="login()">ENTER SYSTEM</button>
+  <div class="error" id="error">ACCESS DENIED</div>
+  <a class="support" href="https://t.me/TraderParvej_Community" target="_blank" rel="noopener">Support Group — Join on Telegram</a>
+  <div class="small">Need help? Join our group for support and updates.</div>
+</div>
 <script>
-let c = document.getElementById("matrix");
-let ctx = c.getContext("2d");
-c.height = window.innerHeight;
-c.width = window.innerWidth;
-let chars = "01".split("");
-let font = 14;
-let columns = c.width / font;
-let drops = [];
-for(let x=0; x<columns; x++) drops[x] = 1;
+// Matrix Effect
+const c=document.getElementById('matrix');
+const ctx=c.getContext('2d');
+function resize(){ c.height=window.innerHeight; c.width=window.innerWidth; cols=Math.floor(c.width/fontSize); }
+let matrix='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+matrix=matrix.split('');
+const fontSize=16;
+let cols=Math.floor(window.innerWidth/fontSize);
+let drops=[]; for(let x=0;x<cols;x++) drops[x]=1;
 function draw(){
-  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+  ctx.fillStyle='rgba(0,0,0,0.05)';
   ctx.fillRect(0,0,c.width,c.height);
-  ctx.fillStyle = "#00ff8a";
-  ctx.font = font + "px monospace";
-  for(let i=0; i<drops.length; i++){
-    let text = chars[Math.floor(Math.random()*chars.length)];
-    ctx.fillText(text,i*font,drops[i]*font);
-    if(drops[i]*font > c.height && Math.random()>0.95) drops[i] = 0;
+  ctx.fillStyle='#0f0';
+  ctx.font=fontSize+'px Share Tech Mono';
+  for(let i=0;i<drops.length;i++){
+    let text=matrix[Math.floor(Math.random()*matrix.length)];
+    ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+    if(drops[i]*fontSize>c.height&&Math.random()>0.975) drops[i]=0;
     drops[i]++;
   }
 }
-setInterval(draw,40);
+window.addEventListener('resize',()=>{ resize(); drops=[]; for(let x=0;x<cols;x++) drops[x]=1; });
+resize(); setInterval(draw,40);
+
+// Login System
 function login(){
-  let p = document.getElementById("pass").value;
-  if(p === "@Ai100"){ window.location.href="signal.html"; }
-  else alert("❌ Wrong Password!");
+  const p=document.getElementById('pass').value;
+  const err=document.getElementById('error');
+  err.style.display='none';
+  if(p==="@Ai100"){
+    // access granted effect
+    document.querySelector('.login-box').style.transition='200ms';
+    document.querySelector('.login-box').style.transform='scale(0.99)';
+    setTimeout(()=>{ window.location.href='signal.html' },420);
+  }else{
+    err.style.display='block';
+    setTimeout(()=>{ err.style.display='none' },2200);
+  }
 }
 </script>
-
 </body>
 </html>
