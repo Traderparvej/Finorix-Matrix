@@ -98,7 +98,11 @@ window.addEventListener('resize',initMatrix);initMatrix();
 
 // ---------------- Signals ----------------
 const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
-const otcAssets = ["NZD/USD (OTC)"];
+const otcAssets = ["USD/ARS (OTC)","USD/BDT (OTC)","USD/EGP (OTC)","USD/INR (OTC)","USD/IDR (OTC)","USD/MXN (OTC)",
+  "EUR/AUD (OTC)","EUR/CHF (OTC)","EUR/SGD (OTC)","GBP/CHF (OTC)","NZD/CAD (OTC)","AUD/NZD (OTC)",
+  "CAD/CHF (OTC)","EUR/NZD (OTC)","USD/PHP (OTC)","GBP/NZD (OTC)","USD/BRL (OTC)","USD/ZAR (OTC)",
+  "EUR/CAD (OTC)","AUD/CHF (OTC)","CHF/JPY (OTC)","NZD/CHF (OTC)","USD/COP (OTC)","USD/DZD (OTC)",
+  "USD/NGN (OTC)","USD/TRY (OTC)","USD/PKR (OTC)","NZD/JPY (OTC)","NZD/USD (OTC)"];
 function updateAssets(){
   const type=document.getElementById('marketType').value;
   const box=document.getElementById('assetBox'); box.innerHTML='';
