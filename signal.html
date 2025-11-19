@@ -117,11 +117,6 @@ body{
   align-self:start;
 }
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0}
-@media(max-width:500px){
-  #assetBox{grid-template-columns:1fr;}
-  .btns{flex-direction:column;}
-}
-/* Admin Panel */
 #adminPanel{
   display:none;
   margin-top:20px;
@@ -130,11 +125,18 @@ body{
   border-radius:12px;
   background:rgba(0,0,0,0.7);
 }
-#adminPanel h3{text-align:center;color:#0f0;margin-bottom:12px;}
-#adminPanel p{color:#0f0;font-size:14px;}
-#adminPanel input, #adminPanel button{margin-top:6px;width:100%;padding:8px;border-radius:6px;border:1px solid #0f0;background:#000;color:#0f0;}
-#adminPanel button{cursor:pointer;background:linear-gradient(90deg,#00ff0f,#00cc8a);color:#000;font-weight:bold;border:none;}
-#adminPanel #closeAdmin{background:#000;color:#0f0;border:1px solid #0f0;}
+#adminPanel h3{
+  text-align:center;
+  color:#0f0;
+  margin-bottom:12px;
+}
+#adminPanel label{font-size:14px;margin-top:8px;color:#0f0;font-weight:bold;}
+#adminPanel input{margin-top:4px;padding:8px;border:1px solid #0f0;border-radius:6px;background:#000;color:#0f0;width:100%;}
+#adminPanel button{margin-top:10px;padding:10px;border:none;border-radius:6px;background:#0f0;color:#000;font-weight:bold;cursor:pointer;}
+@media(max-width:500px){
+  #assetBox{grid-template-columns:1fr;}
+  .btns{flex-direction:column;}
+}
 </style>
 </head>
 <body>
@@ -192,93 +194,136 @@ body{
   <!-- Admin Panel -->
   <div id="adminPanel">
     <h3>ADMIN PANEL</h3>
-    <p>Manage licenses, devices, etc.</p>
-    <input type="text" id="newDevice" placeholder="Device ID">
-    <input type="datetime-local" id="newExpiry">
-    <button onclick="giveLicense()">Save License</button>
-    <button id="closeAdmin" onclick="hideAdmin()">Close Admin Panel</button>
+    <label>Quotex ID</label>
+    <input type="text" id="adminQuotex" placeholder="Enter Quotex ID">
+    <label>Valid Days</label>
+    <input type="number" id="adminDays" placeholder="Enter number of days">
+    <button onclick="addMember()">Add Member</button>
+    <div id="adminList" style="margin-top:12px;"></div>
   </div>
 </div>
 
 <script>
-// -------------------- Matrix Effect --------------------
-const c=document.getElementById('matrix'); const ctx=c.getContext('2d');
-let fontSize=16; let cols=Math.floor(window.innerWidth/fontSize); let drops=[];
+// Matrix Effect
+const c=document.getElementById('matrix');
+const ctx=c.getContext('2d');
+let fontSize=16;
+let cols=Math.floor(window.innerWidth/fontSize);
+let drops=[];
 function resize(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/fontSize);drops=[];for(let x=0;x<cols;x++)drops[x]=1;}
 function initMatrix(){resize();setInterval(draw,40);}
 const matrixChars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';for(let i=0;i<drops.length;i++){let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height && Math.random()>0.975)drops[i]=0; drops[i]++;}}
-window.addEventListener('resize',initMatrix); initMatrix();
+function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';for(let i=0;i<drops.length;i++){let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height && Math.random()>0.975)drops[i]=0;drops[i]++;}}
+window.addEventListener('resize',initMatrix);initMatrix();
 
-// -------------------- Signal System --------------------
-const realAssets=["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
-const otcAssets=["NZD/USD (OTC)"];
-function updateAssets(){const type=document.getElementById('marketType').value; const box=document.getElementById('assetBox'); box.innerHTML=''; const assets=type==='real'?realAssets:otcAssets; assets.forEach(a=>{const label=document.createElement('label'); const input=document.createElement('input'); input.type='checkbox'; input.value=a; label.appendChild(document.createTextNode(a)); label.appendChild(input); box.appendChild(label);});}
+// Signal System
+const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
+const otcAssets = ["NZD/USD (OTC)"];
+function updateAssets(){const type=document.getElementById('marketType').value;const box=document.getElementById('assetBox');box.innerHTML='';const assets=type==='real'?realAssets:otcAssets;assets.forEach(a=>{const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.value=a;label.appendChild(document.createTextNode(a));label.appendChild(input);box.appendChild(label);});}
 updateAssets();
-function randomAsset(selectedAssets){return selectedAssets.length>0?selectedAssets[Math.floor(Math.random()*selectedAssets.length)]:realAssets[Math.floor(Math.random()*realAssets.length)];}
-function generateSignals(count){const signalBox=document.getElementById("out"); signalBox.textContent=""; const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]'); const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value); let current=new Date(); const tzOffset=parseInt(document.getElementById('timezone').value)||0; current.setHours(current.getUTCHours()+tzOffset); let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`; for(let i=0;i<count;i++){const gap=Math.floor(Math.random()*6)+3; current.setMinutes(current.getMinutes()+gap); const t=current.toTimeString().substring(0,5); const asset=randomAsset(selectedAssets); const dir=Math.random()>0.5?'CALL':'PUT'; output+=`${asset}  | ${t} | ${dir}\n`; } output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`; typeWrite(output,signalBox);}
-function typeWrite(text,element){let index=0; element.textContent=""; function type(){if(index<text.length){element.textContent+=text.charAt(index);index++;setTimeout(type,15);}} type();}
+function randomAsset(selectedAssets){if(selectedAssets.length>0){return selectedAssets[Math.floor(Math.random()*selectedAssets.length)];}else{return realAssets[Math.floor(Math.random()*realAssets.length)];}}
+function generateSignals(count){
+  const signalBox=document.getElementById("out");
+  signalBox.textContent="";
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+  let current=new Date();
+  const tzOffset=parseInt(document.getElementById('timezone').value)||0;
+  current.setHours(current.getUTCHours()+tzOffset);
+  let output=`▶️ DATE: ${current.toLocaleDateString('en-GB').replace(/\//g,'.')} ◀️\n\n⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕\n\n          😈 FINORIX MATRIX 😈\n\n⌛️ ${document.getElementById('tf').value} Minutes\n\n`;
+  for(let i=0;i<count;i++){
+      const gap=Math.floor(Math.random()*6)+3; // 3-8 minutes
+      current.setMinutes(current.getMinutes()+gap);
+      const t=current.toTimeString().substring(0,5);
+      const asset=randomAsset(selectedAssets);
+      const dir=Math.random()>0.5?'CALL':'PUT';
+      output+=`${asset}  | ${t} | ${dir}\n`;
+  }
+  output+=`\n            ━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n            ━━━━━━・━━━━━━`;
+  typeWrite(output,signalBox);
+}
+function typeWrite(text,element){let index=0;element.textContent="";function type(){if(index<text.length){element.textContent+=text.charAt(index);index++;setTimeout(type,15);}}type();}
 function copyAll(){navigator.clipboard.writeText(document.getElementById('out').textContent);}
 function resetOut(){document.getElementById('out').textContent='';}
-function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]'); const allChecked=Array.from(checkboxes).every(c=>c.checked); checkboxes.forEach(c=>c.checked=!allChecked);}
+function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const allChecked=Array.from(checkboxes).every(c=>c.checked);checkboxes.forEach(c=>c.checked=!allChecked);}
 
-// -------------------- License System --------------------
-const validLicenses = [
-  {key:"LIC-12345",device:"",expiry:"2025-12-31"},
-  {key:"LIC-67890",device:"",expiry:"2025-12-31"}
-];
-function getDeviceID(){return "DEV-"+btoa(navigator.userAgent).substring(0,12);}
-function checkLicense(licenseKey){
-  const devID=getDeviceID();
-  const lic=validLicenses.find(l=>l.key===licenseKey);
-  if(!lic) return {ok:false,msg:"Invalid License"};
+// License + Members
+let validLicenses=JSON.parse(localStorage.getItem('validLicenses')||'[]');
+
+function saveLicenses(){localStorage.setItem('validLicenses',JSON.stringify(validLicenses)); renderAdminList();}
+function renderAdminList(){
+  const listDiv=document.getElementById('adminList');
+  listDiv.innerHTML='';
+  validLicenses.forEach(l=>{
+    const now=new Date();
+    const expiry=new Date(l.expiry);
+    const remaining=Math.max(Math.ceil((expiry-now)/86400000),0);
+    const div=document.createElement('div');
+    div.textContent=`ID: ${l.key} | Expiry: ${l.expiry} | Days left: ${remaining}`;
+    listDiv.appendChild(div);
+  });
+}
+renderAdminList();
+
+function addMember(){
+  const id=document.getElementById('adminQuotex').value.trim();
+  const days=parseInt(document.getElementById('adminDays').value);
+  if(!id || !days){alert("Enter valid ID and days");return;}
+  const expiry=new Date();
+  expiry.setDate(expiry.getDate()+days);
+  validLicenses.push({key:id,device:"",expiry:expiry.toISOString().split('T')[0]});
+  saveLicenses();
+  document.getElementById('adminQuotex').value='';
+  document.getElementById('adminDays').value='';
+}
+
+// Check License before generating
+function checkLicense(licKey){
+  const lic=validLicenses.find(l=>l.key===licKey);
+  if(!lic) return {ok:false,msg:"Invalid ID"};
   const now=new Date();
-  if(new Date(lic.expiry)<now) return {ok:false,msg:"License Expired"};
-  if(lic.device!=="" && lic.device!==devID) return {ok:false,msg:"License is locked to another device"};
-  lic.device=devID;
-  localStorage.setItem("license",JSON.stringify({key:licenseKey,device:devID}));
-  return {ok:true,msg:"License Valid"};
+  if(new Date(lic.expiry)<now) return {ok:false,msg:"License expired"};
+  return {ok:true,msg:"License valid"};
 }
 
+// Popup for License
 function showLicensePopup(){
-    const overlay=document.createElement("div");
-    overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999";
-    const box=document.createElement("div");
-    box.style.cssText="background:#000;border:2px solid #0f0;padding:30px;border-radius:12px;max-width:400px;width:90%;color:#0f0;font-family:'Share Tech Mono',monospace;text-align:center;box-shadow:0 0 25px #0f0";
-    box.innerHTML=`
-      <h2>🛡 Hacking System 🛡</h2>
-      <p>Enter your <b>License Key</b> below to access signals.</p>
-      <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-      <p>Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here</a></p>
-      <p>Deposit <b>20$</b> to get your license.</p>
-      <p>Contact on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
-      <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
-      <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
-    `;
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-    document.getElementById("popupClose").onclick=()=>{document.body.removeChild(overlay);}
-    document.getElementById("popupSubmit").onclick=()=>{
-      const key=document.getElementById("popupLicense").value.trim();
-      const res=checkLicense(key);
-      if(res.ok){document.body.removeChild(overlay);generateSignals(parseInt(document.getElementById('count').value)||5);}
-      else alert(res.msg);
-    }
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999";
+  const box=document.createElement("div");
+  box.style.cssText="background:#000;border:2px solid #0f0;padding:30px;border-radius:12px;max-width:400px;width:90%;color:#0f0;font-family:'Share Tech Mono',monospace;text-align:center;box-shadow:0 0 25px #0f0";
+  box.innerHTML=`<h2>🛡 Access Signals 🛡</h2>
+    <p>Enter your <b>Quotex ID</b> below:</p>
+    <input type="text" id="popupLicense" placeholder="Enter your ID" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
+    <p>Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here</a></p>
+    <p>Deposit <b>20$</b> to get your license.</p>
+    <p>Contact on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
+    <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
+    <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>`;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  document.getElementById("popupClose").onclick=()=>{document.body.removeChild(overlay);}
+  document.getElementById("popupSubmit").onclick=()=>{
+    const key=document.getElementById("popupLicense").value.trim();
+    const res=checkLicense(key);
+    if(res.ok){document.body.removeChild(overlay);generateSignals(parseInt(document.getElementById('count').value)||5);}
+    else alert(res.msg);
+  }
 }
 
-// -------------------- Admin Panel --------------------
-let adminClick=0;
+// Admin Panel unlock by 5 clicks
+let adminClickCount=0;
+const panelTitle=document.getElementById('panelTitle');
 const adminPanel=document.getElementById('adminPanel');
-document.getElementById('panelTitle').addEventListener('click',()=>{
-  adminClick++;
-  if(adminClick>=5){
-    const pass=prompt("Enter Admin Password:");
-    if(pass==="@TraderParvej@"){adminPanel.style.display="block";}
-    adminClick=0;
+panelTitle.addEventListener('click',()=>{
+  adminClickCount++;
+  if(adminClickCount>=5){
+    adminClickCount=0;
+    const pwd=prompt("Enter Admin Password:");
+    if(pwd==="@TraderParvej@"){adminPanel.style.display='block';}
+    else alert("Wrong Password");
   }
 });
-function hideAdmin(){adminPanel.style.display="none";}
-function giveLicense(){const device=document.getElementById("newDevice").value.trim(); const expiry=document.getElementById("newExpiry").value; if(!device||!expiry){alert("Fill all fields!"); return;} validLicenses.push({key:"LIC-"+Math.floor(Math.random()*99999),device:device,expiry:expiry}); alert("License saved!");}
 </script>
 </body>
 </html>
