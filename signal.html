@@ -133,48 +133,46 @@ function copyAll(){navigator.clipboard.writeText(document.getElementById('out').
 function resetOut(){document.getElementById('out').textContent='';}
 function toggleSelectAll(){const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');const allChecked=Array.from(checkboxes).every(c=>c.checked);checkboxes.forEach(c=>c.checked=!allChecked);}
 
-// ---------------- License & Popup ----------------
+// ---------------- License ----------------
 const licenseKey="@FINORIXMATRIX";
 const licenseDurationDays=10;
 
-function getLicenseData(){return JSON.parse(localStorage.getItem("licenseData")||'{}');}
-function saveLicenseData(expiry){localStorage.setItem("licenseData",JSON.stringify({expiry:expiry}));}
-function isLicenseValid(){const data=getLicenseData(); return data.expiry && new Date(data.expiry) > new Date();}
-function updateLicenseStatus(){const s=document.getElementById('licenseStatus'); if(isLicenseValid()){const data=getLicenseData(); s.textContent=`License Active ✔️ | Expires: ${new Date(data.expiry).toLocaleString()}`; return true;}else{s.textContent="License Inactive ⚠️"; return false;}}
+function getLicenseData(){
+  return JSON.parse(localStorage.getItem("licenseData")||'{}');
+}
+
+function saveLicenseData(expiry){
+  localStorage.setItem("licenseData",JSON.stringify({expiry:expiry}));
+}
+
+function isLicenseValid(){
+  const data=getLicenseData();
+  if(!data.expiry) return false;
+  return new Date(data.expiry) > new Date();
+}
+
+function updateLicenseStatus(){
+  const statusDiv=document.getElementById('licenseStatus');
+  if(isLicenseValid()){
+    const data=getLicenseData();
+    statusDiv.textContent=`License Active ✔️ | Expires: ${new Date(data.expiry).toLocaleString()}`;
+    return true;
+  }else{
+    statusDiv.textContent="License Inactive ⚠️";
+    return false;
+  }
+}
 
 function generateWithLicense(){
   if(isLicenseValid()){
     generateSignals(parseInt(document.getElementById('count').value)||5);
   }else{
-    showLicensePopup();
-  }
-}
-
-function showLicensePopup(){
-  const overlay=document.createElement("div");
-  overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999";
-  const box=document.createElement("div");
-  box.style.cssText="background:#000;border:2px solid #0f0;padding:30px;border-radius:12px;max-width:400px;width:90%;color:#0f0;font-family:'Share Tech Mono',monospace;text-align:center;box-shadow:0 0 25px #0f0";
-  box.innerHTML=`
-    <h2>🛡 Hacking System 🛡</h2>
-    <p>Enter your <b>License Key</b> below to access signals.</p>
-    <input type="text" id="popupLicense" placeholder="Enter License Key" style="width:90%;padding:10px;margin:10px 0;background:#000;border:1px solid #0f0;color:#0f0;border-radius:6px;font-size:14px;">
-    <p>Create account → <a href="https://broker-qx.pro/sign-up/?lid=1508486" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">Click Here</a></p>
-    <p>Deposit <b>20$</b> to get your license.</p>
-    <p>Contact on Telegram → <a href="https://t.me/traderParvej" target="_blank" style="color:#0f0;text-decoration:underline;font-weight:bold;">@traderParvej</a></p>
-    <button id="popupSubmit" style="margin-top:12px;padding:10px 20px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;">Submit</button>
-    <button id="popupClose" style="margin-top:12px;padding:8px 15px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;cursor:pointer;margin-left:10px;">Close</button>
-  `;
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  document.getElementById("popupClose").onclick=()=>{document.body.removeChild(overlay);}
-  document.getElementById("popupSubmit").onclick=()=>{
-    const key=document.getElementById("popupLicense").value.trim();
-    if(key===licenseKey){
-      const now=new Date(); now.setDate(now.getDate()+licenseDurationDays);
+    const inputKey=prompt("Enter License Key to Activate:");
+    if(inputKey===licenseKey){
+      const now=new Date();
+      now.setDate(now.getDate()+licenseDurationDays);
       saveLicenseData(now.toISOString());
       updateLicenseStatus();
-      document.body.removeChild(overlay);
       generateSignals(parseInt(document.getElementById('count').value)||5);
     }else{
       alert("Invalid License Key!");
@@ -189,7 +187,10 @@ let adminClickCount=0;
 const adminPanel=document.getElementById('adminPanel');
 document.getElementById("panelTitle").addEventListener('click',()=>{
   adminClickCount++;
-  if(adminClickCount>=5){ adminClickCount=0; adminPanel.style.display='block'; }
+  if(adminClickCount>=5){
+    adminClickCount=0;
+    adminPanel.style.display='block';
+  }
 });
 function hideAdmin(){adminPanel.style.display='none';}
 </script>
