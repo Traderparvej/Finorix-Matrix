@@ -25,10 +25,44 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 .selectAllBtn{margin-top:6px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:6px 10px;border-radius:6px;cursor:pointer;color:#0f0;text-shadow:0 0 4px #0f0;font-size:13px;align-self:start;}
 .selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0;}
 @media(max-width:500px){#assetBox{grid-template-columns:1fr;} .btns{flex-direction:column;}}
+
+/* ---------------- POPUP (Top-Right Small Notification) ---------------- */
+.popup{
+  position:fixed;
+  top:20px;
+  right:-350px;
+  width:260px;
+  padding:14px;
+  border-radius:8px;
+  background:rgba(0,255,0,0.1);
+  border:1px solid #00ff0f;
+  box-shadow:0 0 15px rgba(0,255,0,0.4);
+  color:#0f0;
+  font-size:13px;
+  line-height:1.4;
+  z-index:9999;
+  transition:0.5s;
+}
+.popup.show{
+  right:20px;
+}
+.popup a{
+  color:#00ff88;
+  text-decoration:none;
+  font-weight:bold;
+}
 </style>
 </head>
 <body>
 <canvas id="matrix"></canvas>
+
+<div class="popup" id="popup">
+<b>🔥 Best Accuracy 🔥</b><br><br>
+Create Account → <a href="#">Click Here</a><br><br>
+Deposit 20$ to get your license.<br><br>
+Contact on Telegram → <b>@traderParvej</b>
+</div>
+
 <div class="panel">
   <div class="title">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
@@ -72,7 +106,7 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
   </div>
 
   <div class="btns">
-    <button class="btn" onclick="generateSignals(parseInt(document.getElementById('count').value)||5)">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="generate()">⚡ GENERATE SIGNALS ⚡</button>
     <button class="btn" onclick="copyAll()">COPY</button>
     <button class="btn" onclick="resetOut()">RESET</button>
   </div>
@@ -93,13 +127,13 @@ const matrixChars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTU
 function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';for(let i=0;i<drops.length;i++){let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height && Math.random()>0.975) drops[i]=0; drops[i]++;}}
 window.addEventListener('resize',initMatrix);initMatrix();
 
-// ---------------- Signals ----------------
+// ---------------- Assets ----------------
 const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
 const otcAssets = ["USD/ARS(OTC)","USD/BDT(OTC)","USD/EGP(OTC)","USD/INR(OTC)","USD/IDR(OTC)","USD/MXN(OTC)",
-  "EUR/AUD(OTC)","EUR/CHF(OTC)","EUR/SGD(OTC)","GBP/CHF(OTC)","NZD/CAD(OTC)","AUD/NZD(OTC)",
-  "CAD/CHF(OTC)","EUR/NZD(OTC)","USD/PHP(OTC)","GBP/NZD(OTC)","USD/BRL(OTC)","USD/ZAR(OTC)",
-  "EUR/CAD(OTC)","AUD/CHF(OTC)","CHF/JPY(OTC)","NZD/CHF(OTC)","USD/COP(OTC)","USD/DZD(OTC)",
-  "USD/NGN(OTC)","USD/TRY(OTC)","USD/PKR(OTC)","NZD/JPY(OTC)","NZD/USD(OTC)"];
+"EUR/AUD(OTC)","EUR/CHF(OTC)","EUR/SGD(OTC)","GBP/CHF(OTC)","NZD/CAD(OTC)","AUD/NZD(OTC)",
+"CAD/CHF(OTC)","EUR/NZD(OTC)","USD/PHP(OTC)","GBP/NZD(OTC)","USD/BRL(OTC)","USD/ZAR(OTC)",
+"EUR/CAD(OTC)","AUD/CHF(OTC)","CHF/JPY(OTC)","NZD/CHF(OTC)","USD/COP(OTC)","USD/DZD(OTC)",
+"USD/NGN(OTC)","USD/TRY(OTC)","USD/PKR(OTC)","NZD/JPY(OTC)","NZD/USD(OTC)"];
 
 function updateAssets(){
   const type=document.getElementById('marketType').value;
@@ -117,31 +151,37 @@ function updateAssets(){
 }
 updateAssets();
 
-function randomAsset(selectedAssets){
-  return selectedAssets.length>0
-  ? selectedAssets[Math.floor(Math.random()*selectedAssets.length)]
-  : realAssets[Math.floor(Math.random()*realAssets.length)];
+// ---------------- Popup ----------------
+function showPopup(){
+  const p=document.getElementById("popup");
+  p.classList.add("show");
+  setTimeout(()=>{ p.classList.remove("show"); }, 3500);
 }
 
-function generateSignals(count){
+// ---------------- Signals ----------------
+function randomAsset(arr){
+  return arr.length>0 ? arr[Math.floor(Math.random()*arr.length)] : realAssets[Math.floor(Math.random()*realAssets.length)];
+}
+
+function generate(){
+  showPopup();  // <-- Popup Every Generate
   const signalBox=document.getElementById("out"); 
   signalBox.textContent="";
 
-  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
-  const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+  const selectedAssets = Array.from(document.querySelectorAll('#assetBox input:checked')).map(c=>c.value);
 
-  const tzOffset=parseInt(document.getElementById('timezone').value)||0;
+  const tzOffset=parseInt(document.getElementById('timezone').value);
   let now = new Date();
-  let current = new Date(now.getTime() + tzOffset*60*60*1000); // UTC + tzOffset
+  let current = new Date(now.getTime() + tzOffset*3600000);
 
-  const day = String(current.getUTCDate()).padStart(2,'0');
-  const month = String(current.getUTCMonth()+1).padStart(2,'0');
-  const year = current.getUTCFullYear();
+  const day=String(current.getUTCDate()).padStart(2,'0');
+  const month=String(current.getUTCMonth()+1).padStart(2,'0');
+  const year=current.getUTCFullYear();
 
-  let output=
+  let txt =
 `▶️ DATE: ${day}.${month}.${year} ◀️
 
-⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕
+⏰ UTC ${tzOffset>=0?'+':''}${tzOffset}:00 ; MTG :- 1 STEP➕
 
           😈 FINORIX MATRIX 😈
 
@@ -149,49 +189,39 @@ function generateSignals(count){
 
 `;
 
+  let count=parseInt(document.getElementById("count").value)||5;
+
   for(let i=0;i<count;i++){
-    const gap=Math.floor(Math.random()*6)+3;
+    const gap=Math.floor(Math.random()*3)+1;  // *** 1–3 MIN RANDOM ***
     current.setMinutes(current.getMinutes()+gap);
 
-    const t = String(current.getUTCHours()).padStart(2,'0') + ':' + String(current.getUTCMinutes()).padStart(2,'0');
-    const asset=randomAsset(selectedAssets);
-    const dir=Math.random()>0.5?'CALL':'PUT';
+    const t = String(current.getUTCHours()).padStart(2,'0')
+            + ":" +
+            String(current.getUTCMinutes()).padStart(2,'0');
 
-    output+=`${asset}  | ${t} | ${dir}\n`;
+    txt += `${randomAsset(selectedAssets)} | ${t}\n`;
   }
 
-  output+=`\n            ━━━━━━・━━━━━━
+  txt+=`\n━━━━━━・━━━━━━
 😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈
-            ━━━━━━・━━━━━━`;
+━━━━━━・━━━━━━`;
 
-  typeWrite(output,signalBox);
+  typeWrite(txt, signalBox);
 }
 
 function typeWrite(text,element){
-  let index=0;
-  element.textContent="";
-  function type(){
-    if(index<text.length){
-      element.textContent+=text.charAt(index);
-      index++;
-      setTimeout(type,15);
-    }
-  }
-  type();
+  let i=0; element.textContent="";
+  function t(){
+    if(i<text.length){ element.textContent+=text.charAt(i); i++; setTimeout(t,15); }
+  } t();
 }
 
-function copyAll(){
-  navigator.clipboard.writeText(document.getElementById('out').textContent);
-}
-
-function resetOut(){
-  document.getElementById('out').textContent='';
-}
-
+function copyAll(){navigator.clipboard.writeText(document.getElementById('out').textContent);}
+function resetOut(){document.getElementById('out').textContent='';}
 function toggleSelectAll(){
-  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
-  const allChecked=Array.from(checkboxes).every(c=>c.checked);
-  checkboxes.forEach(c=>c.checked=!allChecked);
+  const boxes=document.querySelectorAll('#assetBox input');
+  const allChecked=Array.from(boxes).every(c=>c.checked);
+  boxes.forEach(c=>c.checked=!allChecked);
 }
 </script>
 </body>
