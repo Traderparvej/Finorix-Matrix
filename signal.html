@@ -117,18 +117,17 @@ function updateAssets(){
 }
 updateAssets();
 
-function randomAsset(selectedAssets){
-  return selectedAssets.length>0
-  ? selectedAssets[Math.floor(Math.random()*selectedAssets.length)]
-  : realAssets[Math.floor(Math.random()*realAssets.length)];
-}
-
 function generateSignals(count){
   const signalBox=document.getElementById("out"); 
   signalBox.textContent="";
 
   const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
   const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+
+  if(selectedAssets.length===0){
+    alert("⚠️ Please select at least one asset!");
+    return;
+  }
 
   const tzOffset=parseInt(document.getElementById('timezone').value)||0;
   let now = new Date();
@@ -143,9 +142,7 @@ function generateSignals(count){
 
 ⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕
 
-
           😈 FINORIX MATRIX 😈
-
 
 ⌛️ ${document.getElementById('tf').value} Minutes
 
@@ -155,18 +152,29 @@ function generateSignals(count){
   let callCount = 0;
   let putCount = 0;
 
-  for(let i=0;i<count;i++){
+  // To prevent same pair consecutively
+  let usedPairs = [];
 
+  for(let i=0;i<count;i++){
     // ⭐⭐⭐ 4–8 minute random gap ⭐⭐⭐
     const gap = Math.floor(Math.random() * 5) + 4;
-
     current.setMinutes(current.getMinutes()+gap);
+
+    // Pick asset avoiding consecutive duplicate
+    let asset;
+    let attempts = 0;
+    do{
+      asset = selectedAssets[Math.floor(Math.random()*selectedAssets.length)];
+      attempts++;
+    }while(usedPairs.includes(asset) && attempts<10);
+
+    usedPairs.push(asset);
+    if(usedPairs.length>selectedAssets.length) usedPairs.shift(); // keep recent used within number of selected assets
 
     const t = String(current.getUTCHours()).padStart(2,'0') + ':' + 
               String(current.getUTCMinutes()).padStart(2,'0');
-    const asset=randomAsset(selectedAssets);
 
-    // ------------ PERFECT BALANCED CALL/PUT ---------------
+    // Balanced CALL / PUT
     let dir="";
     if(callCount === putCount){
         dir = Math.random() > 0.5 ? "CALL" : "PUT";
@@ -177,10 +185,7 @@ function generateSignals(count){
     else {
         dir = "CALL";
     }
-
-    if(dir==="CALL") callCount++;
-    else putCount++;
-    // -------------------------------------------------------
+    if(dir==="CALL") callCount++; else putCount++;
 
     output+=`${asset}  | ${t} | ${dir}\n`;
   }
