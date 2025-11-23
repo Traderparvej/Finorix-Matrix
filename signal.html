@@ -151,8 +151,8 @@ function generateSignals(count){
 
   for(let i=0;i<count;i++){
 
-    // ⭐⭐⭐ 2–4 minute random gap ⭐⭐⭐
-    const gap = Math.floor(Math.random() * 3) + 2;
+    // ⭐⭐⭐ 4–8 minute random gap ⭐⭐⭐
+    const gap = Math.floor(Math.random() * 5) + 4;
 
     current.setMinutes(current.getMinutes()+gap);
 
