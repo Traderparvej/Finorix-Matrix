@@ -1,71 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finorix Matrix — Signal Generator</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finorix Matrix AI — Signal Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-    body{
-        background:#000;
-        color:#0f0;
-        font-family: monospace;
-        padding:20px;
-    }
-    button{
-        padding:10px 20px;
-        background:#111;
-        color:#0f0;
-        border:1px solid #0f0;
-        cursor:pointer;
-        margin-top:10px;
-    }
-    #box{
-        margin-top:20px;
-        padding:20px;
-        border:1px solid #0f0;
-        white-space:pre-line;
-    }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Share Tech Mono', monospace}
+body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:center;padding-top:20px;}
+#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+.panel{width:90%;max-width:900px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:30px 28px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 0 35px rgba(0,255,0,0.12);display:flex;flex-direction:column;}
+.title{text-align:center;font-size:24px;margin-bottom:12px;text-shadow:0 0 12px #0f0;font-weight:bold;cursor:pointer;}
+.row{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.row label{font-size:15px;color:#0f0;font-weight:600}
+.row select,.row input{width:100%;padding:12px;background:#000;border:1px solid #0f0;color:#0f0;border-radius:8px;outline:none;font-size:14px;}
+.btns{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.btn{flex:1;min-width:150px;padding:12px;background:linear-gradient(90deg,#00ff0f,#00cc8a);border:1px solid #0f0;color:#000;border-radius:8px;cursor:pointer;font-size:15px;font-weight:bold;text-shadow:0 0 6px #0f0;transition:.2s;box-shadow:0 0 20px rgba(0,255,0,0.5);}
+.btn:hover{background:linear-gradient(90deg,#00cc8a,#00ff0f);box-shadow:0 0 24px #0f0}
+.output{margin-top:20px;padding:14px;border:1px dashed rgba(0,255,0,0.3);min-height:220px;white-space:pre-line;overflow-y:auto;border-radius:8px;font-size:14px;line-height:1.4;}
+#assetBox{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+#assetBox label{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;border:1px solid rgba(0,255,0,0.2);transition:.2s;cursor:pointer;}
+#assetBox label:hover{background:rgba(0,255,0,0.1);box-shadow:0 0 10px #0f0;}
+#assetBox input[type="checkbox"]{accent-color:#0f0;}
+.selectAllBtn{margin-top:6px;background:rgba(0,0,0,0.6);border:1px solid #0f0;padding:6px 10px;border-radius:6px;cursor:pointer;color:#0f0;text-shadow:0 0 4px #0f0;font-size:13px;align-self:start;}
+.selectAllBtn:hover{background:rgba(0,40,0,0.7);box-shadow:0 0 10px #0f0;}
+@media(max-width:500px){#assetBox{grid-template-columns:1fr;} .btns{flex-direction:column;}}
 </style>
 </head>
 <body>
+<canvas id="matrix"></canvas>
+<div class="panel">
+  <div class="title">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
-<h2>😈 FINORIX MATRIX — AI Signal 😈</h2>
-<label>Asset: </label>
-<input id="pair" value="EUR/CHF(OTC)"> <br><br>
+  <div class="row">
+    <label>Time Zone (UTC)</label>
+    <select id="timezone">
+      <option value="6" selected>Bangladesh (UTC +06:00)</option>
+      <option value="5">Pakistan (UTC +05:00)</option>
+      <option value="0">UTC +00:00</option>
+      <option value="7">UTC +07:00</option>
+    </select>
+  </div>
 
-<label>Total Signals: </label>
-<input id="total" type="number" value="5"><br><br>
+  <div class="row">
+    <label>Market Type</label>
+    <select id="marketType" onchange="updateAssets()">
+      <option value="real">Real Market</option>
+      <option value="otc">OTC Market</option>
+    </select>
+  </div>
 
-<button onclick="generate()">Generate Signals</button>
+  <div class="row">
+    <label>Assets (Tick to Select)</label>
+    <div id="assetBox"></div>
+    <button class="selectAllBtn" onclick="toggleSelectAll()">Select / Deselect All</button>
+  </div>
 
-<div id="box"></div>
+  <div class="row">
+    <label>Timeframe (Minutes)</label>
+    <select id="tf">
+      <option value="1">1 Minute</option>
+      <option value="2">2 Minutes</option>
+      <option value="3">3 Minutes</option>
+      <option value="5">5 Minutes</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label>Number of Signals</label>
+    <input id="count" type="number" value="5" min="1" />
+  </div>
+
+  <div class="btns">
+    <button class="btn" onclick="generateSignals(parseInt(document.getElementById('count').value)||5)">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="copyAll()">COPY</button>
+    <button class="btn" onclick="resetOut()">RESET</button>
+  </div>
+
+  <div class="output" id="out"></div>
+</div>
 
 <script>
-function generate(){
-    let pair = document.getElementById("pair").value;
-    let total = parseInt(document.getElementById("total").value);
-    let now = new Date();
-    let output = `😈    FINORIX MATRIX   😈\n\n⌛️ 1 Minutes\n\n`;
+// ---------------- Matrix Effect ----------------
+const c=document.getElementById('matrix');
+const ctx=c.getContext('2d');
+let fontSize=16;
+let cols=Math.floor(window.innerWidth/fontSize);
+let drops=[];
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/fontSize);drops=[];for(let x=0;x<cols;x++)drops[x]=1;}
+function initMatrix(){resize();setInterval(draw,40);}
+const matrixChars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fontSize+'px Share Tech Mono';for(let i=0;i<drops.length;i++){let text=matrixChars[Math.floor(Math.random()*matrixChars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height && Math.random()>0.975) drops[i]=0; drops[i]++;}}
+window.addEventListener('resize',initMatrix);initMatrix();
 
-    for(let i=0; i<total; i++){
-        // Random GAP: 4–8 minutes
-        let gap = Math.floor(Math.random() * 5) + 4;
-        now.setMinutes(now.getMinutes() + gap);
+// ---------------- Signals ----------------
+const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
+const otcAssets = ["USD/ARS(OTC)","USD/BDT(OTC)","USD/EGP(OTC)","USD/INR(OTC)","USD/IDR(OTC)","USD/MXN(OTC)",
+  "EUR/AUD(OTC)","EUR/CHF(OTC)","EUR/SGD(OTC)","GBP/CHF(OTC)","NZD/CAD(OTC)","AUD/NZD(OTC)",
+  "CAD/CHF(OTC)","EUR/NZD(OTC)","USD/PHP(OTC)","GBP/NZD(OTC)","USD/BRL(OTC)","USD/ZAR(OTC)",
+  "EUR/CAD(OTC)","AUD/CHF(OTC)","CHF/JPY(OTC)","NZD/CHF(OTC)","USD/COP(OTC)","USD/DZD(OTC)",
+  "USD/NGN(OTC)","USD/TRY(OTC)","USD/PKR(OTC)","NZD/JPY(OTC)","NZD/USD(OTC)"];
 
-        let hh = now.getHours().toString().padStart(2,'0');
-        let mm = now.getMinutes().toString().padStart(2,'0');
+function updateAssets(){
+  const type=document.getElementById('marketType').value;
+  const box=document.getElementById('assetBox'); 
+  box.innerHTML='';
+  const assets=type==='real'?realAssets:otcAssets;
+  assets.forEach(a=>{
+    const label=document.createElement('label'); 
+    const input=document.createElement('input'); 
+    input.type='checkbox'; input.value=a; 
+    label.appendChild(document.createTextNode(a)); 
+    label.appendChild(input); 
+    box.appendChild(label);
+  });
+}
+updateAssets();
 
-        // 50–50 Random CALL / PUT
-        let signal = Math.random() < 0.5 ? "CALL" : "PUT";
+function randomAsset(selectedAssets){
+  return selectedAssets.length>0
+  ? selectedAssets[Math.floor(Math.random()*selectedAssets.length)]
+  : realAssets[Math.floor(Math.random()*realAssets.length)];
+}
 
-        output += `${pair} | ${hh}:${mm} | ${signal}\n`;
+function generateSignals(count){
+  const signalBox=document.getElementById("out"); 
+  signalBox.textContent="";
+
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+
+  const tzOffset=parseInt(document.getElementById('timezone').value)||0;
+  let now = new Date();
+  let current = new Date(now.getTime() + tzOffset*60*60*1000); 
+
+  const day = String(current.getUTCDate()).padStart(2,'0');
+  const month = String(current.getUTCMonth()+1).padStart(2,'0');
+  const year = current.getUTCFullYear();
+
+  let output=
+`▶️ DATE: ${day}.${month}.${year} ◀️
+
+⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕
+
+
+          😈 FINORIX MATRIX 😈
+
+
+⌛️ ${document.getElementById('tf').value} Minutes
+
+`;
+
+  // Balanced counts
+  let callCount = 0;
+  let putCount = 0;
+
+  for(let i=0;i<count;i++){
+
+    // ⭐⭐⭐ 4–8 minute random gap ⭐⭐⭐
+    const gap = Math.floor(Math.random() * 5) + 4;
+
+    current.setMinutes(current.getMinutes()+gap);
+
+    const t = String(current.getUTCHours()).padStart(2,'0') + ':' + 
+              String(current.getUTCMinutes()).padStart(2,'0');
+    const asset=randomAsset(selectedAssets);
+
+    // ------------ PERFECT BALANCED CALL/PUT ---------------
+    let dir="";
+    if(callCount === putCount){
+        dir = Math.random() > 0.5 ? "CALL" : "PUT";
+    }
+    else if(callCount > putCount){
+        dir = "PUT";
+    }
+    else {
+        dir = "CALL";
     }
 
-    output += `\n━━━━━━・━━━━━━\n😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈\n━━━━━━・━━━━━━`;
+    if(dir==="CALL") callCount++;
+    else putCount++;
+    // -------------------------------------------------------
 
-    document.getElementById("box").innerText = output;
+    output+=`${asset}  | ${t} | ${dir}\n`;
+  }
+
+  output+=`\n            ━━━━━━・━━━━━━
+😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈
+            ━━━━━━・━━━━━━`;
+
+  typeWrite(output,signalBox);
+}
+
+function typeWrite(text,element){
+  let index=0;
+  element.textContent="";
+  function type(){
+    if(index<text.length){
+      element.textContent+=text.charAt(index);
+      index++;
+      setTimeout(type,15);
+    }
+  }
+  type();
+}
+
+function copyAll(){
+  navigator.clipboard.writeText(document.getElementById('out').textContent);
+}
+
+function resetOut(){
+  document.getElementById('out').textContent='';
+}
+
+function toggleSelectAll(){
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const allChecked=Array.from(checkboxes).every(c=>c.checked);
+  checkboxes.forEach(c=>c.checked=!allChecked);
 }
 </script>
-
 </body>
 </html>
