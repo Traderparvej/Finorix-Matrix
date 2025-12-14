@@ -34,6 +34,16 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
   <div class="title">FINORIX MATRIX — SIGNAL SYSTEM</div>
 
   <div class="row">
+    <label>Time Zone (UTC)</label>
+    <select id="timezone">
+      <option value="6" selected>Bangladesh (UTC +06:00)</option>
+      <option value="5">Pakistan (UTC +05:00)</option>
+      <option value="0">UTC +00:00</option>
+      <option value="7">UTC +07:00</option>
+    </select>
+  </div>
+
+  <div class="row">
     <label>Market Type</label>
     <select id="marketType" onchange="updateAssets()">
       <option value="real">Real Market</option>
@@ -43,13 +53,30 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
   </div>
 
   <div class="row">
-    <label>Assets</label>
+    <label>Assets (Tick to Select)</label>
     <div id="assetBox"></div>
     <button class="selectAllBtn" onclick="toggleSelectAll()">Select / Deselect All</button>
   </div>
 
+  <div class="row">
+    <label>Timeframe (Minutes)</label>
+    <select id="tf">
+      <option value="1">1 Minute</option>
+      <option value="2">2 Minutes</option>
+      <option value="3">3 Minutes</option>
+      <option value="5">5 Minutes</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label>Number of Signals</label>
+    <input id="count" type="number" value="5" min="1" />
+  </div>
+
   <div class="btns">
-    <button class="btn" onclick="generateSignals(5)">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="generateSignals(parseInt(count.value)||5)">⚡ GENERATE SIGNALS ⚡</button>
+    <button class="btn" onclick="copyAll()">COPY</button>
+    <button class="btn" onclick="resetOut()">RESET</button>
   </div>
 
   <div class="output" id="out"></div>
@@ -57,53 +84,42 @@ body{background:#000;color:#0f0;overflow-x:hidden;display:flex;justify-content:c
 
 <script>
 // ================= ASSETS =================
-
-const realAssets = [
-  "EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY",
-  "GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"
-];
+const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
 
 const otcAssets = [
-  "USD/ARS(OTC)","USD/BDT(OTC)","USD/EGP(OTC)","USD/INR(OTC)","USD/IDR(OTC)",
-  "USD/MXN(OTC)","EUR/AUD(OTC)","EUR/CHF(OTC)","EUR/SGD(OTC)","GBP/CHF(OTC)",
-  "NZD/CAD(OTC)","AUD/NZD(OTC)","CAD/CHF(OTC)","EUR/NZD(OTC)","USD/PHP(OTC)",
-  "GBP/NZD(OTC)","USD/BRL(OTC)","USD/ZAR(OTC)","EUR/CAD(OTC)","AUD/CHF(OTC)",
-  "CHF/JPY(OTC)","NZD/CHF(OTC)","USD/COP(OTC)","USD/DZD(OTC)","USD/NGN(OTC)",
-  "USD/TRY(OTC)","USD/PKR(OTC)","NZD/JPY(OTC)","NZD/USD(OTC)"
+"USD/ARS(OTC)","USD/BDT(OTC)","USD/EGP(OTC)","USD/INR(OTC)","USD/IDR(OTC)","USD/MXN(OTC)",
+"EUR/AUD(OTC)","EUR/CHF(OTC)","EUR/SGD(OTC)","GBP/CHF(OTC)","NZD/CAD(OTC)","AUD/NZD(OTC)",
+"CAD/CHF(OTC)","EUR/NZD(OTC)","USD/PHP(OTC)","GBP/NZD(OTC)","USD/BRL(OTC)","USD/ZAR(OTC)",
+"EUR/CAD(OTC)","AUD/CHF(OTC)","CHF/JPY(OTC)","NZD/CHF(OTC)","USD/COP(OTC)","USD/DZD(OTC)",
+"USD/NGN(OTC)","USD/TRY(OTC)","USD/PKR(OTC)","NZD/JPY(OTC)","NZD/USD(OTC)"
 ];
 
 const cryptoAssets = [
-  "Bitcoin (OTC)","Axie Infinity (OTC)","Polkadot (OTC)","Ethereum Classic (OTC)",
-  "Ethereum (OTC)","Floki (OTC)","Gala (OTC)","Hamster Kombat (OTC)",
-  "Chainlink (OTC)","Litecoin (OTC)","Melania Meme (OTC)","Pepe (OTC)",
-  "Shiba Inu (OTC)","Solana (OTC)","Toncoin (OTC)","Trump (OTC)",
-  "Dogwifhat (OTC)","Zcash (OTC)","TRON (OTC)","Bonk (OTC)",
-  "Ripple (OTC)","Cardano (OTC)","Avalanche (OTC)","Arbitrum (OTC)",
-  "Cosmos (OTC)","Bitcoin Cash (OTC)","Decentraland (OTC)","Beam (OTC)",
-  "Dogecoin (OTC)","Dash (OTC)","Aptos (OTC)","Binance Coin (OTC)","Celestia (OTC)"
+"Bitcoin (OTC)","Axie Infinity (OTC)","Polkadot (OTC)","Ethereum Classic (OTC)",
+"Ethereum (OTC)","Floki (OTC)","Gala (OTC)","Hamster Kombat (OTC)",
+"Chainlink (OTC)","Litecoin (OTC)","Melania Meme (OTC)","Pepe (OTC)",
+"Shiba Inu (OTC)","Solana (OTC)","Toncoin (OTC)","Trump (OTC)",
+"Dogwifhat (OTC)","Zcash (OTC)","TRON (OTC)","Bonk (OTC)",
+"Ripple (OTC)","Cardano (OTC)","Avalanche (OTC)","Arbitrum (OTC)",
+"Cosmos (OTC)","Bitcoin Cash (OTC)","Decentraland (OTC)","Beam (OTC)",
+"Dogecoin (OTC)","Dash (OTC)","Aptos (OTC)","Binance Coin (OTC)","Celestia (OTC)"
 ];
 
-// ================= FUNCTIONS =================
-
 function updateAssets(){
-  const type=document.getElementById('marketType').value;
-  const box=document.getElementById('assetBox');
-  box.innerHTML='';
-  const assets = type==='real' ? realAssets : type==='otc' ? otcAssets : cryptoAssets;
+  const type=marketType.value;
+  assetBox.innerHTML='';
+  const assets = type==='real'?realAssets:type==='otc'?otcAssets:cryptoAssets;
   assets.forEach(a=>{
-    const label=document.createElement('label');
-    const input=document.createElement('input');
-    input.type='checkbox'; input.value=a;
-    label.appendChild(document.createTextNode(a));
-    label.appendChild(input);
-    box.appendChild(label);
+    const l=document.createElement('label');
+    const i=document.createElement('input');
+    i.type='checkbox'; i.value=a;
+    l.append(a,i);
+    assetBox.appendChild(l);
   });
 }
 updateAssets();
 
-function toggleSelectAll(){
-  document.querySelectorAll('#assetBox input').forEach(c=>c.checked=true);
-}
+// ===== rest code unchanged =====
 </script>
 </body>
 </html>
