@@ -95,15 +95,14 @@ function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.heig
 window.addEventListener('resize',initMatrix);initMatrix();
 
 // ---------------- Signals ----------------
-const realAssets=["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
-
-const otcAssets=["USD/ARS(OTC)","USD/BDT(OTC)","USD/EGP(OTC)","USD/INR(OTC)","USD/IDR(OTC)","USD/MXN(OTC)",
+const realAssets = ["EUR/USD","GBP/USD","USD/JPY","AUD/JPY","EUR/JPY","GBP/JPY","USD/CAD","AUD/CAD","EUR/GBP","USD/CHF"];
+const otcAssets = ["USD/ARS(OTC)","USD/BDT(OTC)","USD/EGP(OTC)","USD/INR(OTC)","USD/IDR(OTC)","USD/MXN(OTC)",
 "EUR/AUD(OTC)","EUR/CHF(OTC)","EUR/SGD(OTC)","GBP/CHF(OTC)","NZD/CAD(OTC)","AUD/NZD(OTC)",
 "CAD/CHF(OTC)","EUR/NZD(OTC)","USD/PHP(OTC)","GBP/NZD(OTC)","USD/BRL(OTC)","USD/ZAR(OTC)",
 "EUR/CAD(OTC)","AUD/CHF(OTC)","CHF/JPY(OTC)","NZD/CHF(OTC)","USD/COP(OTC)","USD/DZD(OTC)",
 "USD/NGN(OTC)","USD/TRY(OTC)","USD/PKR(OTC)","NZD/JPY(OTC)","NZD/USD(OTC)"];
 
-const cryptoAssets=[
+const cryptoAssets = [
 "Bitcoin (OTC)","Axie Infinity (OTC)","Polkadot (OTC)","Ethereum Classic (OTC)","Ethereum (OTC)",
 "Floki (OTC)","Gala (OTC)","Hamster Kombat (OTC)","Chainlink (OTC)","Litecoin (OTC)",
 "Melania Meme (OTC)","Pepe (OTC)","Shiba Inu (OTC)","Solana (OTC)","Toncoin (OTC)",
@@ -115,20 +114,120 @@ const cryptoAssets=[
 
 function updateAssets(){
   const type=document.getElementById('marketType').value;
-  const box=document.getElementById('assetBox');
+  const box=document.getElementById('assetBox'); 
   box.innerHTML='';
   const assets=type==='real'?realAssets:type==='otc'?otcAssets:cryptoAssets;
   assets.forEach(a=>{
-    const label=document.createElement('label');
-    const input=document.createElement('input');
-    input.type='checkbox'; input.value=a;
-    label.appendChild(document.createTextNode(a));
-    label.appendChild(input);
+    const label=document.createElement('label'); 
+    const input=document.createElement('input'); 
+    input.type='checkbox'; input.value=a; 
+    label.appendChild(document.createTextNode(a)); 
+    label.appendChild(input); 
     box.appendChild(label);
   });
 }
 updateAssets();
 
-/* --- generateSignals, typeWrite, copyAll, resetOut, toggleSelectAll ---
-   ⬆️ নিচের সব function তোমার original কোড 그대로 আছে (unchanged)
-*/
+function generateSignals(count){
+  const signalBox=document.getElementById("out"); 
+  signalBox.textContent="";
+
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const selectedAssets=Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+
+  if(selectedAssets.length===0){
+    alert("⚠️ Please select at least one asset!");
+    return;
+  }
+
+  const tzOffset=parseInt(document.getElementById('timezone').value)||0;
+  let now = new Date();
+  let current = new Date(now.getTime() + tzOffset*60*60*1000); 
+
+  const day = String(current.getUTCDate()).padStart(2,'0');
+  const month = String(current.getUTCMonth()+1).padStart(2,'0');
+  const year = current.getUTCFullYear();
+
+  let output=
+`▶️ DATE: ${day}.${month}.${year} ◀️
+
+⏰ UTC ${tzOffset>=0?'+':'-'}${tzOffset}:00 ; MTG :- 1 STEP➕
+
+          😈 FINORIX MATRIX 😈
+
+⌛️ ${document.getElementById('tf').value} Minutes
+
+`;
+
+  let callCount = 0;
+  let putCount = 0;
+  let usedPairs = [];
+
+  for(let i=0;i<count;i++){
+    const gap = Math.floor(Math.random() * 5) + 4;
+    current.setMinutes(current.getMinutes()+gap);
+
+    let asset;
+    let attempts = 0;
+    do{
+      asset = selectedAssets[Math.floor(Math.random()*selectedAssets.length)];
+      attempts++;
+    }while(usedPairs.includes(asset) && attempts<10);
+
+    usedPairs.push(asset);
+    if(usedPairs.length>selectedAssets.length) usedPairs.shift();
+
+    const t = String(current.getUTCHours()).padStart(2,'0') + ':' + 
+              String(current.getUTCMinutes()).padStart(2,'0');
+
+    let dir="";
+    if(callCount === putCount){
+        dir = Math.random() > 0.5 ? "CALL" : "PUT";
+    }
+    else if(callCount > putCount){
+        dir = "PUT";
+    }
+    else {
+        dir = "CALL";
+    }
+    if(dir==="CALL") callCount++; else putCount++;
+
+    output+=`${asset}  | ${t} | ${dir}\n`;
+  }
+
+  output+=`\n            ━━━━━━・━━━━━━
+😈 Avoid signal after Doji, <80%, Gap, or 3–4 B2B opposite candles 😈
+            ━━━━━━・━━━━━━`;
+
+  typeWrite(output,signalBox);
+}
+
+function typeWrite(text,element){
+  let index=0;
+  element.textContent="";
+  function type(){
+    if(index<text.length){
+      element.textContent+=text.charAt(index);
+      index++;
+      setTimeout(type,15);
+    }
+  }
+  type();
+}
+
+function copyAll(){
+  navigator.clipboard.writeText(document.getElementById('out').textContent);
+}
+
+function resetOut(){
+  document.getElementById('out').textContent='';
+}
+
+function toggleSelectAll(){
+  const checkboxes=document.querySelectorAll('#assetBox input[type="checkbox"]');
+  const allChecked=Array.from(checkboxes).every(c=>c.checked);
+  checkboxes.forEach(c=>c.checked=!allChecked);
+}
+</script>
+</body>
+</html>
